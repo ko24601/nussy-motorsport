@@ -560,6 +560,129 @@
     margin-top: 6px;
   }
 
+  /* ── RACING SERIES ── */
+  .series-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .series-main {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .series-main::after {
+    content: 'QRL';
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 80px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.05);
+    pointer-events: none;
+  }
+
+  .series-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--neon);
+    border: 1px solid rgba(170,255,0,0.3);
+    padding: 4px 12px;
+    margin-bottom: 18px;
+  }
+
+  .series-main h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 18px;
+  }
+
+  .series-main p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #777;
+    margin-bottom: 14px;
+  }
+
+  .series-drivers {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .driver-chip {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--neon);
+    padding: 5px 14px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .series-cta {
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 1px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 4px;
+  }
+
+  .series-cta a {
+    color: var(--neon);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .series-cta a:hover { text-decoration: underline; }
+
+  .series-meta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .series-stat {
+    border-left: 2px solid rgba(170,255,0,0.2);
+    padding-left: 16px;
+  }
+
+  .series-stat .s-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .series-stat .s-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--neon);
+  }
+
   /* ── FOOTER ── */
   footer {
     border-top: 1px solid var(--border);
@@ -940,6 +1063,44 @@
     <div class="about-block">
       <h3>The Philosophy</h3>
       <p>From the tight chicanes of Monza to the grueling endurance of the Nürburgring, every driver under the Nussy banner carries a singular vision: to push beyond the limit. Success is about discipline in every practice lap and the courage to find the gap where others see a wall.</p>
+    </div>
+  </div>
+
+  <!-- CURRENT RACING SERIES -->
+  <div class="section-label">
+    <h2>Current Racing Series</h2>
+  </div>
+  <div class="series-section">
+    <div class="series-main">
+      <div class="series-badge">Quantum Racing League</div>
+      <h2>Dominating the Quantum Racing League.</h2>
+      <p>Our journey in the QRL continues. We are proud to announce our entry into the <strong style="color:#fff;">F125 T2</strong> tier with our drivers:</p>
+      <div class="series-drivers">
+        <span class="driver-chip">roi</span>
+        <span class="driver-chip">Xachary Zinsmaster</span>
+      </div>
+      <p>While we prepare for the season opener in <strong style="color:#fff;">Bahrain</strong>, we are always looking for the next talent to join our ranks.</p>
+      <div class="series-cta">
+        Think you have what it takes to wear the Nussy colors? <a href="#">Contact our management today →</a>
+      </div>
+    </div>
+    <div class="series-meta">
+      <div class="series-stat">
+        <div class="s-label">League</div>
+        <div class="s-value">Quantum Racing</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Tier</div>
+        <div class="s-value">F125 T2</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Season Opener</div>
+        <div class="s-value">Bahrain</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Status</div>
+        <div class="s-value" style="color:#AAFF00;">Active</div>
+      </div>
     </div>
   </div>
 
