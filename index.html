@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nussy Motorsport</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon: #AAFF00;
+    --neon-dim: #7acc00;
+    --neon-glow: rgba(170,255,0,0.35);
+    --black: #080808;
+    --dark: #0f0f0f;
+    --card: #141414;
+    --border: #1f1f1f;
+    --text: #e8e8e8;
+    --muted: #666;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  /* ── FULLSCREEN IFRAME OVERRIDE ── */
+  html, body {
+    width: 100%;
+    height: 100%;
+  }
+
+  body {
+    background: var(--black);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    min-height: 100vh;
+    min-width: 100vw;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Tell the parent Google Sites iframe to be fullscreen */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Scanline overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.05) 2px,
+      rgba(0,0,0,0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── HEADER ── */
+  header {
+    position: relative;
+    padding: 48px 40px 40px;
+    border-bottom: 1px solid var(--border);
+    overflow: hidden;
+  }
+
+  header::before {
+    content: 'NUSSY';
+    position: absolute;
+    right: -20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 160px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.07);
+    pointer-events: none;
+    white-space: nowrap;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .logo-mark {
+    width: 80px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    background: none;
+  }
+
+  .logo-mark img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .logo-mark span {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 900;
+    color: var(--black);
+  }
+
+  .brand h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(22px, 4vw, 36px);
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(170,255,0,0.15);
+    letter-spacing: 2px;
+    line-height: 1;
+  }
+
+  .brand p {
+    font-size: 12px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
+  .header-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    position: relative;
+    z-index: 1;
+  }
+
+  .btn {
+    font-family: 'Rajdhani', sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 10px 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: none;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .btn-primary {
+    background: var(--neon);
+    color: var(--black);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-primary:hover {
+    background: #ffffff;
+    box-shadow: 0 0 20px var(--neon-glow);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--neon);
+    border: 1px solid rgba(170,255,0,0.3);
+    clip-path: polygon(8px 0%, 100% 0%, calc(100% - 8px) 100%, 0% 100%);
+  }
+
+  .btn-ghost:hover {
+    border-color: var(--neon);
+    box-shadow: 0 0 12px var(--neon-glow), inset 0 0 12px rgba(170,255,0,0.05);
+  }
+
+  /* ── TICKER ── */
+  .ticker {
+    background: var(--neon);
+    padding: 8px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+  .ticker-track {
+    display: inline-block;
+    animation: ticker 30s linear infinite;
+  }
+
+  .ticker-track span {
+    font-family: 'Orbitron', monospace;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--black);
+    letter-spacing: 3px;
+    padding: 0 40px;
+  }
+
+  .ticker-track span::before {
+    content: '◆ ';
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  /* ── MAIN ── */
+  main { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; }
+
+  /* ── SECTION LABELS ── */
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0 24px;
+  }
+
+  .section-label::before {
+    content: '';
+    width: 4px;
+    height: 24px;
+    background: var(--neon);
+    box-shadow: 0 0 10px var(--neon-glow);
+  }
+
+  .section-label h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--neon);
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, var(--border), transparent);
+  }
+
+  /* ── NEWS GRID ── */
+  #news-feed {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+  }
+
+  .news-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+    animation: fadeIn 0.4s ease both;
+  }
+
+  .news-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 2px;
+    background: var(--neon);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .news-card:hover { border-color: rgba(170,255,0,0.3); transform: translateY(-2px); }
+  .news-card:hover::before { transform: scaleX(1); }
+
+  .news-card .tag {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--neon);
+    background: rgba(170,255,0,0.08);
+    border: 1px solid rgba(170,255,0,0.2);
+    padding: 3px 10px;
+    display: inline-block;
+    margin-bottom: 12px;
+  }
+
+  .news-card h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.4;
+    margin-bottom: 10px;
+    color: #fff;
+  }
+
+  .news-card p {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--muted);
+  }
+
+  .news-card .meta {
+    margin-top: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .news-card .date {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: #444;
+    text-transform: uppercase;
+  }
+
+  .news-card .author {
+    font-size: 11px;
+    color: var(--neon-dim);
+    letter-spacing: 1px;
+  }
+
+  .news-empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px dashed var(--border);
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── ADMIN PANEL ── */
+  #admin-panel {
+    display: none;
+    background: var(--card);
+    border: 1px solid rgba(170,255,0,0.2);
+    padding: 32px;
+    margin-top: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #admin-panel::before {
+    content: 'ADMIN';
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 80px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.04);
+    pointer-events: none;
+  }
+
+  #admin-panel.visible { display: block; animation: fadeIn 0.3s ease; }
+
+  .admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+  }
+
+  .admin-header h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--neon);
+    text-transform: uppercase;
+  }
+
+  .admin-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .form-group.full { grid-column: 1/-1; }
+
+  .form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    background: var(--black);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: rgba(170,255,0,0.5);
+    box-shadow: 0 0 0 2px rgba(170,255,0,0.05);
+  }
+
+  .form-group textarea { resize: vertical; min-height: 100px; }
+
+  .form-group select option { background: var(--dark); }
+
+  .admin-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+    grid-column: 1/-1;
+  }
+
+  /* ── LOGIN MODAL ── */
+  #login-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(8px);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  #login-overlay.visible { display: flex; }
+
+  .login-box {
+    background: var(--dark);
+    border: 1px solid rgba(170,255,0,0.25);
+    padding: 40px;
+    width: 360px;
+    position: relative;
+  }
+
+  .login-box::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--neon);
+    box-shadow: 0 0 16px var(--neon-glow);
+  }
+
+  .login-box h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 16px;
+    letter-spacing: 4px;
+    color: var(--neon);
+    margin-bottom: 8px;
+  }
+
+  .login-box p {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 28px;
+    letter-spacing: 1px;
+  }
+
+  .login-box .form-group { margin-bottom: 16px; }
+
+  .login-error {
+    font-size: 12px;
+    color: #ff4444;
+    letter-spacing: 1px;
+    margin-top: -8px;
+    margin-bottom: 12px;
+    display: none;
+  }
+
+  .login-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+
+  .login-close:hover { color: var(--neon); }
+
+  /* ── ABOUT STRIP ── */
+  .about-strip {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .about-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 32px;
+  }
+
+  .about-block h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    letter-spacing: 4px;
+    color: var(--neon);
+    margin-bottom: 14px;
+    text-transform: uppercase;
+  }
+
+  .about-block p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #aaa;
+  }
+
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .stat-block {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 24px;
+    text-align: center;
+  }
+
+  .stat-block .num {
+    font-family: 'Orbitron', monospace;
+    font-size: 32px;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 16px var(--neon-glow);
+    line-height: 1;
+  }
+
+  .stat-block .label {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 6px;
+  }
+
+  /* ── RACING SERIES ── */
+  .series-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 2px;
+  }
+
+  .series-main {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--neon);
+    padding: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .series-main::after {
+    content: 'QRL';
+    position: absolute;
+    right: 20px;
+    bottom: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 80px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.05);
+    pointer-events: none;
+  }
+
+  .series-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--neon);
+    border: 1px solid rgba(170,255,0,0.3);
+    padding: 4px 12px;
+    margin-bottom: 18px;
+  }
+
+  .series-main h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(18px, 3vw, 28px);
+    font-weight: 900;
+    color: #fff;
+    line-height: 1.2;
+    margin-bottom: 18px;
+  }
+
+  .series-main p {
+    font-size: 15px;
+    line-height: 1.7;
+    color: #777;
+    margin-bottom: 14px;
+  }
+
+  .series-drivers {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .driver-chip {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--neon);
+    padding: 5px 14px;
+    clip-path: polygon(6px 0%, 100% 0%, calc(100% - 6px) 100%, 0% 100%);
+  }
+
+  .series-cta {
+    font-size: 13px;
+    color: #555;
+    letter-spacing: 1px;
+    border-top: 1px solid var(--border);
+    padding-top: 20px;
+    margin-top: 4px;
+  }
+
+  .series-cta a {
+    color: var(--neon);
+    text-decoration: none;
+    font-weight: 700;
+  }
+
+  .series-cta a:hover { text-decoration: underline; }
+
+  .series-meta {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .series-stat {
+    border-left: 2px solid rgba(170,255,0,0.2);
+    padding-left: 16px;
+  }
+
+  .series-stat .s-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 4px;
+  }
+
+  .series-stat .s-value {
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--neon);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 24px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: #333;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  footer a { color: var(--neon-dim); text-decoration: none; }
+
+  /* ── NOTIFICATION ── */
+  #notif {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--card);
+    border: 1px solid var(--neon);
+    border-left: 3px solid var(--neon);
+    padding: 14px 20px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: var(--text);
+    z-index: 9998;
+    display: none;
+    animation: slideIn 0.3s ease;
+    box-shadow: 0 0 20px rgba(170,255,0,0.1);
+  }
+
+  @keyframes slideIn {
+    from { transform: translateX(20px); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 40px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero::before {
+    content: 'NUSSY';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 200px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.04);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  /* ── DAY COUNTER ── */
+  .day-counter {
+    background: var(--black);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .day-counter .day-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 20px var(--neon-glow);
+  }
+
+  .day-counter .day-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .day-counter .day-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  .day-counter .day-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── HERO ── */
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--neon);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-label::before {
+    content: '';
+    width: 32px;
+    height: 2px;
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon-glow);
+  }
+
+  .hero h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 54px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    max-width: 800px;
+    margin-bottom: 24px;
+  }
+
+  .hero h2 em {
+    color: var(--neon);
+    font-style: normal;
+    text-shadow: 0 0 30px var(--neon-glow);
+  }
+
+  .hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #888;
+    max-width: 680px;
+  }
+
+  /* ── EVENT SECTION ── */
+  .event-section {
+    background: var(--card);
+    border: 1px solid rgba(170,255,0,0.2);
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0;
+  }
+
+  .event-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon), transparent);
+    box-shadow: 0 0 20px var(--neon-glow);
+  }
+
+  .event-section::after {
+    content: 'GROUP S';
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 80px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.05);
+    pointer-events: none;
+  }
+
+  .event-sponsor {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--neon);
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+
+  .event-section h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(20px, 3.5vw, 36px);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .event-section h2 span {
+    color: var(--neon);
+  }
+
+  .event-section > p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #888;
+    max-width: 700px;
+    margin-bottom: 28px;
+  }
+
+  .event-perks {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .event-perk {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .event-perk .perk-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: rgba(170,255,0,0.08);
+    border: 1px solid rgba(170,255,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .event-perk .perk-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon);
+    margin-bottom: 4px;
+  }
+
+  .event-perk .perk-text p {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.5;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-large {
+    font-size: 14px;
+    padding: 14px 28px;
+    letter-spacing: 3px;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 640px) {
+    header { padding: 32px 20px; }
+    main { padding: 0 20px 40px; }
+    .admin-grid { grid-template-columns: 1fr; }
+    .about-strip { grid-template-columns: 1fr; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+    .header-actions .btn-ghost { display: none; }
+    footer { flex-direction: column; gap: 8px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOGIN MODAL -->
+<div id="login-overlay">
+  <div class="login-box">
+    <button class="login-close" onclick="closeLogin()">✕</button>
+    <h3>Admin Access</h3>
+    <p>Enter credentials to manage news</p>
+    <div class="form-group">
+      <label>Password</label>
+      <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <p class="login-error" id="login-error">⚠ Incorrect password</p>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="tryLogin()">Authenticate</button>
+  </div>
+</div>
+
+<!-- NOTIFICATION -->
+<div id="notif"></div>
+
+<!-- HEADER -->
+<header>
+  <div class="header-inner">
+    <div class="logo-mark"><img src="logo.png" alt="Nussy Motorsport" style="width:48px;height:48px;object-fit:contain;clip-path:none;background:none;"></div>
+    <div class="brand">
+      <h1>NUSSY MOTORSPORT</h1>
+      <p>Sim Racing Esports · Est. 2026</p>
+    </div>
+    <div class="header-actions">
+      <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-ghost" id="discord-btn">⚡ Discord</a>
+      <button class="btn btn-primary" onclick="openLogin()">Admin</button>
+    </div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track" id="ticker-track">
+    <span>NUSSY MOTORSPORT</span>
+    <span>GT3 ESPORTS RACING</span>
+    <span>DOMINANCE THROUGH DEDICATION</span>
+    <span>NEVER GIVE UP</span>
+    <span>ASSETTO CORSA COMPETIZIONE</span>
+    <span>NUSSY MOTORSPORT</span>
+    <span>GT3 ESPORTS RACING</span>
+    <span>DOMINANCE THROUGH DEDICATION</span>
+    <span>NEVER GIVE UP</span>
+    <span>ASSETTO CORSA COMPETIZIONE</span>
+  </div>
+</div>
+
+<!-- DAY COUNTER -->
+<div class="day-counter">
+  <span class="day-num" id="day-count">DAY 1</span>
+  <div class="day-divider"></div>
+  <span class="day-label">Road to Karting</span>
+  <div class="day-divider"></div>
+  <span class="day-sub">The Journey Has Begun</span>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label">Nussy Motorsport</div>
+  <h2>From Sim to Asphalt: The <em>Evolution</em> of Nussy Motorsport.</h2>
+  <p>We are more than a sim-racing team. We are a community of high-performance athletes, driven by precision, professionalism, and the ultimate goal: the real-world karting track.</p>
+</section>
+
+<!-- EVENT SECTION -->
+<div style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
+  <div class="event-section">
+    <div class="event-sponsor">Powered by Group S</div>
+    <h2>Challenge the <span>Pro's</span> – Powered by Group S.</h2>
+    <p>Are you fast enough to beat the best? On <strong style="color:#fff;">May 10th, 2026</strong>, Nussy Motorsport is hosting a massive "Community vs. Drivers" event in ACC.</p>
+    <div class="event-perks">
+      <div class="event-perk">
+        <div class="perk-icon">💰</div>
+        <div class="perk-text">
+          <strong>Real Stakes</strong>
+          <p>Thanks to our partner Group S, our drivers will earn prize money for their performance.</p>
+        </div>
+      </div>
+      <div class="event-perk">
+        <div class="perk-icon">🎯</div>
+        <div class="perk-text">
+          <strong>Get Noticed</strong>
+          <p>This isn't just a race; it's a scouting ground. Top performers will have the unique opportunity to be scouted and officially join the Nussy Motorsport roster.</p>
+        </div>
+      </div>
+    </div>
+    <div class="event-actions">
+      <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-primary btn-large">Register Now</a>
+      <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-ghost btn-large">⚡ Join Discord</a>
+    </div>
+    <img src="group-s.jpg" alt="Nussy Motorsport AMG GT3 — Group S" style="width:100%;margin-top:32px;display:block;border:1px solid rgba(170,255,0,0.1);">
+  </div>
+</div>
+
+<!-- MAIN CONTENT -->
+<main>
+
+  <!-- ADMIN PANEL -->
+  <div id="admin-panel">
+    <div class="admin-header">
+      <h3>📡 Post News Update</h3>
+      <button class="btn btn-ghost" style="font-size:11px;" onclick="logout()">Logout</button>
+    </div>
+    <div class="admin-grid">
+      <div class="form-group">
+        <label>Headline</label>
+        <input type="text" id="news-title" placeholder="e.g. Race 5 Results — Monza Sprint">
+      </div>
+      <div class="form-group">
+        <label>Category</label>
+        <select id="news-tag">
+          <option value="RESULTS">Results</option>
+          <option value="ANNOUNCEMENT">Announcement</option>
+          <option value="DRIVER NEWS">Driver News</option>
+          <option value="TECHNICAL">Technical</option>
+          <option value="LEAGUE NEWS">League News</option>
+        </select>
+      </div>
+      <div class="form-group full">
+        <label>Content</label>
+        <textarea id="news-body" placeholder="Write your news update here..."></textarea>
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" onclick="postNews()">⬆ Publish</button>
+        <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWS FEED -->
+  <div class="section-label">
+    <h2>Latest News</h2>
+  </div>
+  <div id="news-feed">
+    <div class="news-empty">No news yet — check back soon</div>
+  </div>
+
+  <!-- ABOUT -->
+  <div class="section-label">
+    <h2>About The Team</h2>
+  </div>
+  <div class="about-strip">
+    <div class="about-block">
+      <h3>The Vision</h3>
+      <p>Founded by Marcel Hartwich, Nussy Motorsport is a competitive powerhouse in the sim racing esports arena. Sim racing isn't just a simulation — it's the ultimate frontier of modern motorsport, where engineering meets intuition and virtual asphalt demands the same respect as any physical track.</p>
+    </div>
+    <div class="about-block">
+      <h3>The Philosophy</h3>
+      <p>From the tight chicanes of Monza to the grueling endurance of the Nürburgring, every driver under the Nussy banner carries a singular vision: to push beyond the limit. Success is about discipline in every practice lap and the courage to find the gap where others see a wall.</p>
+    </div>
+  </div>
+
+  <!-- CURRENT RACING SERIES -->
+  <div class="section-label">
+    <h2>Current Racing Series</h2>
+  </div>
+  <div class="series-section">
+    <div class="series-main">
+      <div class="series-badge">Quantum Racing League</div>
+      <h2>Dominating the Quantum Racing League.</h2>
+      <p>Our journey in the QRL continues. We are proud to announce our entry into the <strong style="color:#fff;">F125 T2</strong> tier with our drivers:</p>
+      <div class="series-drivers">
+        <span class="driver-chip">roi</span>
+        <span class="driver-chip">Xachary Zinsmaster</span>
+      </div>
+      <p>While we prepare for the season opener in <strong style="color:#fff;">Bahrain</strong>, we are always looking for the next talent to join our ranks.</p>
+      <div class="series-cta">
+        Think you have what it takes to wear the Nussy colors? <a href="https://discord.gg/3FcMCvKBUq" target="_blank">Contact our management today →</a>
+      </div>
+    </div>
+    <div class="series-meta">
+      <div class="series-stat">
+        <div class="s-label">League</div>
+        <div class="s-value">Quantum Racing</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Tier</div>
+        <div class="s-value">F125 T2</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Season Opener</div>
+        <div class="s-value">Bahrain</div>
+      </div>
+      <div class="series-stat">
+        <div class="s-label">Status</div>
+        <div class="s-value" style="color:#AAFF00;">Active</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="stat-grid">
+    <div class="stat-block">
+      <div class="num">GT3</div>
+      <div class="label">Class</div>
+    </div>
+    <div class="stat-block">
+      <div class="num" id="stat-drivers">6+</div>
+      <div class="label">Drivers</div>
+    </div>
+    <div class="stat-block">
+      <div class="num">ACC</div>
+      <div class="label">Platform</div>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <span>© Nussymotorsport® — All Rights Reserved</span>
+  <span>Nussymotorsport.de</span>
+</footer>
+
+<script>
+  // ── CONFIG ──
+  const ADMIN_PASSWORD = 'nussy2024'; // Change this!
+  const STORAGE_KEY = 'nussy_news';
+
+  // ── STATE ──
+  let isAdmin = false;
+  let news = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+  // ── AUTH ──
+  function openLogin() {
+    document.getElementById('login-overlay').classList.add('visible');
+    setTimeout(() => document.getElementById('admin-password').focus(), 100);
+  }
+
+  function closeLogin() {
+    document.getElementById('login-overlay').classList.remove('visible');
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-error').style.display = 'none';
+  }
+
+  function tryLogin() {
+    const pw = document.getElementById('admin-password').value;
+    if (pw === ADMIN_PASSWORD) {
+      isAdmin = true;
+      closeLogin();
+      document.getElementById('admin-panel').classList.add('visible');
+      notify('✓ Admin access granted');
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+      document.getElementById('admin-password').value = '';
+      document.getElementById('admin-password').focus();
+    }
+  }
+
+  function logout() {
+    isAdmin = false;
+    document.getElementById('admin-panel').classList.remove('visible');
+    notify('Logged out');
+  }
+
+  // ── NEWS ──
+  function postNews() {
+    const title = document.getElementById('news-title').value.trim();
+    const body = document.getElementById('news-body').value.trim();
+    const tag = document.getElementById('news-tag').value;
+    if (!title || !body) { notify('⚠ Title and content required'); return; }
+
+    const item = {
+      id: Date.now(),
+      title,
+      body,
+      tag,
+      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
+      author: 'Admin'
+    };
+
+    news.unshift(item);
+    saveNews();
+    renderNews();
+    clearForm();
+    notify('✓ News published!');
+  }
+
+  function deleteNews(id) {
+    news = news.filter(n => n.id !== id);
+    saveNews();
+    renderNews();
+    notify('Post deleted');
+  }
+
+  function saveNews() {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
+  }
+
+  function clearForm() {
+    document.getElementById('news-title').value = '';
+    document.getElementById('news-body').value = '';
+  }
+
+  function renderNews() {
+    const feed = document.getElementById('news-feed');
+    if (news.length === 0) {
+      feed.innerHTML = '<div class="news-empty">No news yet — check back soon</div>';
+      return;
+    }
+    feed.innerHTML = news.map((item, i) => `
+      <div class="news-card" style="animation-delay:${i * 0.05}s">
+        <span class="tag">${item.tag}</span>
+        <h3>${escHtml(item.title)}</h3>
+        <p>${escHtml(item.body)}</p>
+        <div class="meta">
+          <span class="date">${item.date}</span>
+          <span class="author">${item.author}${isAdmin ? ` &nbsp;·&nbsp; <span style="color:#ff5555;cursor:pointer;font-size:11px;" onclick="deleteNews(${item.id})">✕ Delete</span>` : ''}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── NOTIFY ──
+  function notify(msg) {
+    const el = document.getElementById('notif');
+    el.textContent = msg;
+    el.style.display = 'block';
+    clearTimeout(window._notifTimer);
+    window._notifTimer = setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
+
+  // ── DAY COUNTER ──
+  (function() {
+    const start = new Date('2026-04-23T00:00:00');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const day = Math.floor((today - start) / 86400000) + 1;
+    document.getElementById('day-count').textContent = 'DAY ' + day;
+  })();
+
+  // ── INIT ──
+  renderNews();
+
+  // Close overlay on backdrop click
+  document.getElementById('login-overlay').addEventListener('click', function(e) {
+    if (e.target === this) closeLogin();
+  });
+
+  // ── FULLSCREEN IFRAME HACK ──
+  // Attempt to resize the parent Google Sites iframe to cover the full page
+  (function fullscreenEmbed() {
+    try {
+      // Signal parent to resize iframe via postMessage
+      function sendResize() {
+        const height = document.body.scrollHeight;
+        window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+        // Also try direct style injection into parent
+        try {
+          const iframes = window.parent.document.querySelectorAll('iframe');
+          iframes.forEach(function(f) {
+            try {
+              if (f.contentWindow === window) {
+                f.style.cssText = 'width:100%!important;height:100vh!important;min-height:100vh!important;border:none!important;display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:99999!important;';
+                // Also hide Google Sites chrome
+                const body = window.parent.document.body;
+                if (body) body.style.cssText = 'overflow:hidden!important;margin:0!important;padding:0!important;';
+              }
+            } catch(e) {}
+          });
+        } catch(e) {}
+      }
+      sendResize();
+      window.addEventListener('resize', sendResize);
+      // Retry a few times as page loads
+      setTimeout(sendResize, 500);
+      setTimeout(sendResize, 1500);
+      setTimeout(sendResize, 3000);
+    } catch(e) {}
+  })();
+</script>
+</body>
+</html>
