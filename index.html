@@ -600,6 +600,192 @@
     to { transform: translateX(0); opacity: 1; }
   }
 
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 40px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .hero::before {
+    content: 'NUSSY';
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    font-family: 'Orbitron', monospace;
+    font-size: 200px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.04);
+    pointer-events: none;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+
+  .hero-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    color: var(--neon);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .hero-label::before {
+    content: '';
+    width: 32px;
+    height: 2px;
+    background: var(--neon);
+    box-shadow: 0 0 8px var(--neon-glow);
+  }
+
+  .hero h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(28px, 5vw, 54px);
+    font-weight: 900;
+    line-height: 1.1;
+    color: #fff;
+    max-width: 800px;
+    margin-bottom: 24px;
+  }
+
+  .hero h2 em {
+    color: var(--neon);
+    font-style: normal;
+    text-shadow: 0 0 30px var(--neon-glow);
+  }
+
+  .hero p {
+    font-size: 18px;
+    line-height: 1.7;
+    color: #888;
+    max-width: 680px;
+  }
+
+  /* ── EVENT SECTION ── */
+  .event-section {
+    background: var(--card);
+    border: 1px solid rgba(170,255,0,0.2);
+    padding: 48px;
+    position: relative;
+    overflow: hidden;
+    margin-top: 0;
+  }
+
+  .event-section::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--neon), transparent);
+    box-shadow: 0 0 20px var(--neon-glow);
+  }
+
+  .event-section::after {
+    content: 'GROUP S';
+    position: absolute;
+    right: 30px;
+    bottom: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 80px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.05);
+    pointer-events: none;
+  }
+
+  .event-sponsor {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--neon);
+    padding: 4px 12px;
+    margin-bottom: 20px;
+  }
+
+  .event-section h2 {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(20px, 3.5vw, 36px);
+    font-weight: 900;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.2;
+  }
+
+  .event-section h2 span {
+    color: var(--neon);
+  }
+
+  .event-section > p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: #888;
+    max-width: 700px;
+    margin-bottom: 28px;
+  }
+
+  .event-perks {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 36px;
+  }
+
+  .event-perk {
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+  }
+
+  .event-perk .perk-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: rgba(170,255,0,0.08);
+    border: 1px solid rgba(170,255,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    margin-top: 2px;
+  }
+
+  .event-perk .perk-text strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--neon);
+    margin-bottom: 4px;
+  }
+
+  .event-perk .perk-text p {
+    font-size: 14px;
+    color: #777;
+    line-height: 1.5;
+  }
+
+  .event-actions {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .btn-large {
+    font-size: 14px;
+    padding: 14px 28px;
+    letter-spacing: 3px;
+  }
+
   /* ── RESPONSIVE ── */
   @media (max-width: 640px) {
     header { padding: 32px 20px; }
@@ -660,6 +846,42 @@
     <span>DOMINANCE THROUGH DEDICATION</span>
     <span>NEVER GIVE UP</span>
     <span>ASSETTO CORSA COMPETIZIONE</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-label">Nussy Motorsport</div>
+  <h2>From Sim to Asphalt: The <em>Evolution</em> of Nussy Motorsport.</h2>
+  <p>We are more than a sim-racing team. We are a community of high-performance athletes, driven by precision, professionalism, and the ultimate goal: the real-world karting track.</p>
+</section>
+
+<!-- EVENT SECTION -->
+<div style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
+  <div class="event-section">
+    <div class="event-sponsor">Powered by Group S</div>
+    <h2>Challenge the <span>Pro's</span> – Powered by Group S.</h2>
+    <p>Are you fast enough to beat the best? On <strong style="color:#fff;">May 10th, 2026</strong>, Nussy Motorsport is hosting a massive "Community vs. Drivers" event in ACC.</p>
+    <div class="event-perks">
+      <div class="event-perk">
+        <div class="perk-icon">💰</div>
+        <div class="perk-text">
+          <strong>Real Stakes</strong>
+          <p>Thanks to our partner Group S, our drivers will earn prize money for their performance.</p>
+        </div>
+      </div>
+      <div class="event-perk">
+        <div class="perk-icon">🎯</div>
+        <div class="perk-text">
+          <strong>Get Noticed</strong>
+          <p>This isn't just a race; it's a scouting ground. Top performers will have the unique opportunity to be scouted and officially join the Nussy Motorsport roster.</p>
+        </div>
+      </div>
+    </div>
+    <div class="event-actions">
+      <a href="#" class="btn btn-primary btn-large">Register Now</a>
+      <a href="#" class="btn btn-ghost btn-large">⚡ Join Discord</a>
+    </div>
   </div>
 </div>
 
