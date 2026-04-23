@@ -752,6 +752,48 @@
     overflow: hidden;
   }
 
+  /* ── DAY COUNTER ── */
+  .day-counter {
+    background: var(--black);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+  }
+
+  .day-counter .day-num {
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 20px var(--neon-glow);
+  }
+
+  .day-counter .day-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+
+  .day-counter .day-divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+  }
+
+  .day-counter .day-sub {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* ── HERO ── */
   .hero-label {
     font-size: 11px;
     font-weight: 700;
@@ -975,6 +1017,15 @@
     <span>NEVER GIVE UP</span>
     <span>ASSETTO CORSA COMPETIZIONE</span>
   </div>
+</div>
+
+<!-- DAY COUNTER -->
+<div class="day-counter">
+  <span class="day-num" id="day-count">DAY 1</span>
+  <div class="day-divider"></div>
+  <span class="day-label">Road to Karting</span>
+  <div class="day-divider"></div>
+  <span class="day-sub">The Journey Has Begun</span>
 </div>
 
 <!-- HERO -->
@@ -1243,6 +1294,15 @@
     clearTimeout(window._notifTimer);
     window._notifTimer = setTimeout(() => { el.style.display = 'none'; }, 3000);
   }
+
+  // ── DAY COUNTER ──
+  (function() {
+    const start = new Date('2026-04-23T00:00:00');
+    const today = new Date();
+    today.setHours(0,0,0,0);
+    const day = Math.floor((today - start) / 86400000) + 1;
+    document.getElementById('day-count').textContent = 'DAY ' + day;
+  })();
 
   // ── INIT ──
   renderNews();
