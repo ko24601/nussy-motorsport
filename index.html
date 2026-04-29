@@ -978,10 +978,14 @@
     <h3>Admin Access</h3>
     <p>Enter credentials to manage news</p>
     <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="admin-email" placeholder="admin@nussymotorsport.de" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <div class="form-group" style="margin-top:12px;">
       <label>Password</label>
       <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
     </div>
-    <p class="login-error" id="login-error">⚠ Incorrect password</p>
+    <p class="login-error" id="login-error">⚠ Incorrect credentials</p>
     <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="tryLogin()">Authenticate</button>
   </div>
 </div>
@@ -1200,49 +1204,78 @@
   <span>Nussymotorsport.de</span>
 </footer>
 
-<script>
+<script type="module">
+  import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+
+  // ── FIREBASE ──
+  const firebaseConfig = {
+    apiKey: "AIzaSyA0zb71MZOh5Ew8jVkGV2iR37xcDSkxwrE",
+    authDomain: "nussy-motorsports.firebaseapp.com",
+    projectId: "nussy-motorsports",
+    storageBucket: "nussy-motorsports.appspot.com",
+    messagingSenderId: "961500849466",
+    appId: "1:961500849466:web:placeholder"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
   // ── CONFIG ──
-  const ADMIN_PASSWORD = 'nussy2026';
   const STORAGE_KEY = 'nussy_news';
 
   // ── STATE ──
   let isAdmin = false;
   let news = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
 
+  // ── FIREBASE AUTH STATE ──
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      isAdmin = true;
+      document.getElementById('admin-panel').classList.add('visible');
+      renderNews();
+    } else {
+      isAdmin = false;
+      document.getElementById('admin-panel').classList.remove('visible');
+      renderNews();
+    }
+  });
+
   // ── AUTH ──
-  function openLogin() {
+  window.openLogin = function() {
     document.getElementById('login-overlay').classList.add('visible');
-    setTimeout(() => document.getElementById('admin-password').focus(), 100);
+    setTimeout(() => document.getElementById('admin-email').focus(), 100);
   }
 
-  function closeLogin() {
+  window.closeLogin = function() {
     document.getElementById('login-overlay').classList.remove('visible');
     document.getElementById('admin-password').value = '';
+    document.getElementById('admin-email').value = '';
     document.getElementById('login-error').style.display = 'none';
   }
 
-  function tryLogin() {
+  window.tryLogin = async function() {
+    const email = document.getElementById('admin-email').value.trim();
     const pw = document.getElementById('admin-password').value;
-    if (pw === ADMIN_PASSWORD) {
-      isAdmin = true;
+    const errEl = document.getElementById('login-error');
+    try {
+      await signInWithEmailAndPassword(auth, email, pw);
       closeLogin();
-      document.getElementById('admin-panel').classList.add('visible');
       notify('✓ Admin access granted');
-    } else {
-      document.getElementById('login-error').style.display = 'block';
+    } catch (e) {
+      errEl.style.display = 'block';
       document.getElementById('admin-password').value = '';
       document.getElementById('admin-password').focus();
     }
   }
 
-  function logout() {
-    isAdmin = false;
-    document.getElementById('admin-panel').classList.remove('visible');
+  window.logout = async function() {
+    await signOut(auth);
     notify('Logged out');
   }
 
   // ── NEWS ──
-  function postNews() {
+  window.postNews = function postNews() {
     const title = document.getElementById('news-title').value.trim();
     const body = document.getElementById('news-body').value.trim();
     const tag = document.getElementById('news-tag').value;
@@ -1264,7 +1297,7 @@
     notify('✓ News published!');
   }
 
-  function deleteNews(id) {
+  window.deleteNews = function deleteNews(id) {
     news = news.filter(n => n.id !== id);
     saveNews();
     renderNews();
@@ -1275,7 +1308,7 @@
     localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
   }
 
-  function clearForm() {
+  window.clearForm = function clearForm() {
     document.getElementById('news-title').value = '';
     document.getElementById('news-body').value = '';
   }
