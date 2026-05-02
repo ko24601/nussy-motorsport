@@ -2272,6 +2272,37 @@
   </div>
 </footer>
 
+<script>
+  // ── LOADER (runs immediately, independent of Firebase module) ──
+  (function() {
+    const bar = document.getElementById('loader-bar');
+    const status = document.getElementById('loader-status');
+    const loader = document.getElementById('loader');
+    const steps = [
+      [15,  'Loading Assets'],
+      [40,  'Connecting Systems'],
+      [65,  'Authenticating'],
+      [85,  'Preparing Telemetry'],
+      [100, 'Ready'],
+    ];
+    let step = 0;
+    function dismiss() {
+      loader.classList.add('hidden');
+      setTimeout(() => { if (loader.parentNode) loader.parentNode.removeChild(loader); }, 1000);
+    }
+    function tick() {
+      if (step >= steps.length) { setTimeout(dismiss, 350); return; }
+      const [pct, label] = steps[step++];
+      bar.style.width = pct + '%';
+      status.textContent = label;
+      setTimeout(tick, 320);
+    }
+    setTimeout(tick, 300);
+    // Hard fallback — always gone by 5s
+    setTimeout(dismiss, 5000);
+  })();
+</script>
+
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
@@ -2559,36 +2590,6 @@
     if (e.target === this) closeLogin();
   });
 
-  // ── LOADER ──
-  (function() {
-    const bar = document.getElementById('loader-bar');
-    const status = document.getElementById('loader-status');
-    const loader = document.getElementById('loader');
-    const steps = [
-      [15,  'Loading Assets'],
-      [40,  'Connecting Systems'],
-      [65,  'Authenticating'],
-      [85,  'Preparing Telemetry'],
-      [100, 'Ready'],
-    ];
-    let step = 0;
-    function tick() {
-      if (step >= steps.length) {
-        setTimeout(() => loader.classList.add('hidden'), 400);
-        // Remove from DOM after transition
-        setTimeout(() => loader.remove(), 1200);
-        return;
-      }
-      const [pct, label] = steps[step++];
-      bar.style.width = pct + '%';
-      status.textContent = label;
-      setTimeout(tick, step === steps.length ? 300 : 320);
-    }
-    // Start after a brief pause so fonts load
-    setTimeout(tick, 200);
-    // Hard fallback — always dismiss after 4s no matter what
-    setTimeout(() => { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 1000); }, 4000);
-  })();
 
   // ── SCROLL PROGRESS ──
   window.addEventListener('scroll', () => {
