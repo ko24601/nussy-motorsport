@@ -1861,30 +1861,119 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
+    /* Nav */
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
     .nav-live { display: none; }
-    .site-nav { justify-content: space-between; padding: 0 20px; }
-  }
-  @media (max-width: 768px) {
-    .series-section { grid-template-columns: 1fr; }
-    .shop-preview { grid-template-columns: repeat(3, 1fr); }
-  }
-  @media (max-width: 640px) {
-    header { padding: 32px 20px; }
-    main { padding: 0 20px 40px; }
-    .admin-grid { grid-template-columns: 1fr; }
-    .about-strip { grid-template-columns: 1fr; }
-    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+    .site-nav { justify-content: space-between; padding: 0 16px; }
+
+    /* Header */
+    header { padding: 28px 16px 24px; }
+    header::before { font-size: 80px; right: -10px; }
     .header-actions .btn-ghost { display: none; }
-    .site-nav { padding: 0 20px; }
-    .nav-links li:nth-child(n+3) { display: none; }
-    .footer-bottom { grid-template-columns: 1fr; gap: 16px; }
+    .header-actions .btn-primary { padding: 8px 14px; font-size: 11px; letter-spacing: 1px; }
+
+    /* Main */
+    main { padding: 0 16px 40px; }
+
+    /* Hero */
+    .hero { padding: 48px 16px 40px; }
+    .hero::before { font-size: 100px; }
+    .hero h2 { font-size: clamp(22px, 7vw, 36px); }
+    .hero p { font-size: 15px; }
+
+    /* Day counter */
+    .day-counter { padding: 10px 16px; gap: 10px; flex-wrap: wrap; justify-content: center; }
+    .day-counter .day-num { font-size: 18px; }
+    .day-counter .day-label { font-size: 10px; }
+    .day-counter .day-sub { font-size: 9px; }
+
+    /* About */
+    .about-strip { grid-template-columns: 1fr; }
+    .about-block { padding: 24px; }
+    .stat-grid { grid-template-columns: repeat(3, 1fr); }
+    .stat-block { padding: 16px 10px; }
+    .stat-block .num { font-size: 24px; }
+    .stat-block .label { font-size: 9px; letter-spacing: 2px; }
+
+    /* Series */
+    .series-section { grid-template-columns: 1fr; }
+    .series-main { padding: 24px; }
+    .series-meta { padding: 24px; }
+
+    /* Event */
+    .event-section { padding: 24px 16px; }
+    .event-actions { flex-direction: column; gap: 10px; }
+    .btn-large { width: 100%; justify-content: center; }
+
+    /* Driver cards */
+    .driver-cards { grid-template-columns: 1fr 1fr; }
+
+    /* News grid */
+    #news-feed { grid-template-columns: 1fr; }
+
+    /* Roster */
+    .roster-grid { grid-template-columns: 1fr 1fr; }
+
+    /* Shop */
+    .shop-preview { grid-template-columns: repeat(3, 1fr); }
+
+    /* Footer */
+    .footer-bottom { grid-template-columns: 1fr; gap: 16px; padding: 24px 16px; }
     .footer-right { justify-content: flex-start; }
     .footer-center { text-align: left; }
-    .shop-preview { grid-template-columns: repeat(3, 1fr); }
-    .driver-cards { grid-template-columns: 1fr 1fr; }
-    .event-section { padding: 28px; }
+    .footer-socials { flex-wrap: wrap; gap: 12px; }
+    footer { padding: 16px; }
+
+    /* CTA Banner */
+    .cta-banner { padding: 36px 16px; }
+    .cta-banner::before { font-size: 80px; }
+
+    /* Admin grid */
+    .admin-grid { grid-template-columns: 1fr; }
+
+    /* Section divider margin */
+    .section-divider { margin: 32px 0 0; }
+    .section-label { margin: 28px 0 18px; }
+  }
+
+  @media (max-width: 480px) {
+    /* Header tighter */
+    .header-inner { gap: 12px; }
+    .logo-mark { width: 56px; height: 42px; }
+    .brand h1 { font-size: 18px; }
+    .brand p { font-size: 10px; letter-spacing: 2px; }
+
+    /* Driver + roster single col */
+    .driver-cards { grid-template-columns: 1fr; }
+    .roster-grid { grid-template-columns: 1fr; }
+
+    /* Shop 2 col on tiny screens */
+    .shop-preview { grid-template-columns: repeat(2, 1fr); }
+
+    /* Stat grid */
+    .stat-block { padding: 14px 6px; }
+    .stat-block .num { font-size: 20px; }
+    .stat-block .label { font-size: 8px; letter-spacing: 1px; }
+
+    /* Series padding */
+    .series-main { padding: 20px 16px; }
+    .series-meta { padding: 20px 16px; }
+
+    /* News card */
+    .news-card { padding: 18px; }
+
+    /* Roster card */
+    .roster-card { padding: 20px 16px; }
+
+    /* Event perks */
+    .event-perk { gap: 10px; }
+
+    /* Notif bottom */
+    #notif { right: 12px; bottom: 12px; font-size: 12px; max-width: calc(100vw - 24px); }
+
+    /* Back to top */
+    #back-top { bottom: 60px; right: 12px; }
   }
 </style>
 </head>
@@ -2224,7 +2313,7 @@
   // ── CUSTOM CURSOR ──
   (function() {
     // Skip on touch devices
-    if (window.matchMedia('(pointer: coarse)').matches) return;
+    if (window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768) return;
 
     const cur = document.getElementById('cursor');
     const dot = document.getElementById('cursor-dot');
@@ -2276,7 +2365,8 @@
 
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
-  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+  import { getAuth, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+  import { getFirestore, collection, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
 
   // ── FIREBASE ──
   const firebaseConfig = {
@@ -2288,106 +2378,37 @@
     appId: "1:961500849466:web:placeholder"
   };
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
-
-  // ── CONFIG ──
-  const STORAGE_KEY = 'nussy_news';
+  const db   = getFirestore(app);
 
   // ── STATE ──
   let isAdmin = false;
-  let news = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  let news    = [];
+  let roster  = [];
 
   // ── FIREBASE AUTH STATE ──
   onAuthStateChanged(auth, (user) => {
-    if (user) {
-      isAdmin = true;
-      document.getElementById('admin-panel').classList.add('visible');
-      document.getElementById('admin-roster-panel').style.display = 'block';
-      document.body.classList.add('admin-active');
-      renderNews();
-      renderRoster();
-    } else {
-      isAdmin = false;
-      document.getElementById('admin-panel').classList.remove('visible');
-      document.getElementById('admin-roster-panel').style.display = 'none';
-      document.body.classList.remove('admin-active');
-      renderNews();
-      renderRoster();
-    }
+    isAdmin = !!user;
+    document.body.classList.toggle('admin-active', isAdmin);
+    renderNews();
+    renderRoster();
   });
 
-  // ── AUTH ──
-  window.openLogin = function() {
-    document.getElementById('login-overlay').classList.add('visible');
-    setTimeout(() => document.getElementById('admin-email').focus(), 100);
-  }
+  // ── LIVE DATA FROM FIRESTORE ──
+  const newsQ   = query(collection(db, 'news'),   orderBy('createdAt', 'desc'));
+  const rosterQ = query(collection(db, 'roster'), orderBy('createdAt', 'asc'));
 
-  window.closeLogin = function() {
-    document.getElementById('login-overlay').classList.remove('visible');
-    document.getElementById('admin-password').value = '';
-    document.getElementById('admin-email').value = '';
-    document.getElementById('login-error').style.display = 'none';
-  }
-
-  window.tryLogin = async function() {
-    const email = document.getElementById('admin-email').value.trim();
-    const pw = document.getElementById('admin-password').value;
-    const errEl = document.getElementById('login-error');
-    try {
-      await signInWithEmailAndPassword(auth, email, pw);
-      closeLogin();
-      notify('✓ Admin access granted');
-    } catch (e) {
-      errEl.style.display = 'block';
-      document.getElementById('admin-password').value = '';
-      document.getElementById('admin-password').focus();
-    }
-  }
-
-  window.logout = async function() {
-    await signOut(auth);
-    notify('Logged out');
-  }
-
-  // ── NEWS ──
-  window.postNews = function postNews() {
-    const title = document.getElementById('news-title').value.trim();
-    const body = document.getElementById('news-body').value.trim();
-    const tag = document.getElementById('news-tag').value;
-    if (!title || !body) { notify('⚠ Title and content required'); return; }
-
-    const item = {
-      id: Date.now(),
-      title,
-      body,
-      tag,
-      date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
-      author: 'Admin'
-    };
-
-    news.unshift(item);
-    saveNews();
+  onSnapshot(newsQ, snap => {
+    news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderNews();
-    clearForm();
-    notify('✓ News published!');
-  }
+  });
 
-  window.deleteNews = function deleteNews(id) {
-    news = news.filter(n => n.id !== id);
-    saveNews();
-    renderNews();
-    notify('Post deleted');
-  }
+  onSnapshot(rosterQ, snap => {
+    roster = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderRoster();
+  });
 
-  function saveNews() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
-  }
-
-  window.clearForm = function clearForm() {
-    document.getElementById('news-title').value = '';
-    document.getElementById('news-body').value = '';
-  }
 
   function renderNews() {
     const feed = document.getElementById('news-feed');
@@ -2402,7 +2423,7 @@
         <p>${escHtml(item.body)}</p>
         <div class="meta">
           <span class="date">${item.date}</span>
-          <span class="author">${item.author}${isAdmin ? ` &nbsp;·&nbsp; <span style="color:#ff5555;cursor:pointer;font-size:11px;" onclick="deleteNews(${item.id})">✕ Delete</span>` : ''}</span>
+          <span class="author">${item.author}</span>
         </div>
       </div>
     `).join('');
@@ -2482,16 +2503,10 @@
   })();
 
   // ── ROSTER ──
-  const ROSTER_KEY = 'nussy_roster';
-  let roster = JSON.parse(localStorage.getItem(ROSTER_KEY) || '[]');
-
   const ROLE_LABELS = {
-    driver:     'Race Driver',
-    reserve:    'Reserve Driver',
-    founder:    'Founder / CEO',
-    developer:  'Developer',
-    management: 'Management',
-    staff:      'Staff'
+    driver: 'Race Driver', reserve: 'Reserve Driver',
+    founder: 'Founder / CEO', developer: 'Developer',
+    management: 'Management', staff: 'Staff'
   };
 
   function renderRoster() {
@@ -2502,7 +2517,6 @@
     }
     feed.innerHTML = roster.map((m, i) => `
       <div class="roster-card" style="animation-delay:${i * 0.05}s">
-        <button class="roster-delete" onclick="deleteRosterMember(${m.id})" title="Remove">✕</button>
         <div class="roster-avatar">${escHtml(m.name.charAt(0))}</div>
         <div class="roster-name">${escHtml(m.name)}</div>
         <span class="roster-role-badge ${escHtml(m.role)}">${escHtml(ROLE_LABELS[m.role] || m.role)}</span>
@@ -2510,32 +2524,6 @@
         ${m.number ? `<div class="roster-number">${escHtml(m.number)}</div>` : ''}
       </div>
     `).join('');
-  }
-
-  window.addRosterMember = function() {
-    const name   = document.getElementById('roster-name').value.trim();
-    const role   = document.getElementById('roster-role').value;
-    const number = document.getElementById('roster-number').value.trim();
-    const nation = document.getElementById('roster-nation').value.trim();
-    if (!name) { notify('⚠ Name is required'); return; }
-    roster.push({ id: Date.now(), name, role, number, nation });
-    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
-    renderRoster();
-    clearRosterForm();
-    notify('✓ Member added!');
-  }
-
-  window.deleteRosterMember = function(id) {
-    roster = roster.filter(m => m.id !== id);
-    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
-    renderRoster();
-    notify('Member removed');
-  }
-
-  window.clearRosterForm = function() {
-    document.getElementById('roster-name').value = '';
-    document.getElementById('roster-number').value = '';
-    document.getElementById('roster-nation').value = '';
   }
 
   // ── NAV ACTIVE HIGHLIGHT ──

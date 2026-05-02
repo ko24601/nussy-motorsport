@@ -144,6 +144,12 @@
     top: 0;
     z-index: 100;
     backdrop-filter: blur(12px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .admin-topbar.hidden-bar {
+    opacity: 0;
+    transform: translateY(-100%);
+    pointer-events: none;
   }
   .admin-topbar-left {
     display: flex;
@@ -584,6 +590,7 @@
 <script type="module">
   import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-app.js';
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-auth.js';
+  import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, serverTimestamp, query, orderBy } from 'https://www.gstatic.com/firebasejs/11.0.0/firebase-firestore.js';
 
   const firebaseConfig = {
     apiKey: "AIzaSyA0zb71MZOh5Ew8jVkGV2iR37xcDSkxwrE",
@@ -594,19 +601,27 @@
     appId: "1:961500849466:web:placeholder"
   };
 
-  const app = initializeApp(firebaseConfig);
+  const app  = initializeApp(firebaseConfig);
   const auth = getAuth(app);
+  const db   = getFirestore(app);
 
-  const STORAGE_KEY = 'nussy_news';
-  const ROSTER_KEY  = 'nussy_roster';
   const ROLE_LABELS = {
     driver: 'Race Driver', reserve: 'Reserve Driver',
     founder: 'Founder / CEO', developer: 'Developer',
     management: 'Management', staff: 'Staff'
   };
 
-  let news   = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-  let roster = JSON.parse(localStorage.getItem(ROSTER_KEY)  || '[]');
+  function escHtml(s) {
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  function notify(msg) {
+    const el = document.getElementById('notif');
+    el.textContent = msg;
+    el.style.display = 'block';
+    clearTimeout(window._notifTimer);
+    window._notifTimer = setTimeout(() => { el.style.display = 'none'; }, 3000);
+  }
 
   // ── AUTH STATE ──
   onAuthStateChanged(auth, user => {
@@ -614,12 +629,56 @@
       document.getElementById('login-screen').classList.add('hidden');
       document.getElementById('admin-screen').classList.add('visible');
       document.getElementById('admin-user-label').textContent = user.email;
-      renderAll();
+      startListeners();
     } else {
       document.getElementById('login-screen').classList.remove('hidden');
       document.getElementById('admin-screen').classList.remove('visible');
     }
   });
+
+  // ── REAL-TIME LISTENERS ──
+  let unsubNews, unsubRoster;
+  function startListeners() {
+    // News — ordered newest first
+    const newsQ = query(collection(db, 'news'), orderBy('createdAt', 'desc'));
+    unsubNews = onSnapshot(newsQ, snap => {
+      const items = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-news').textContent = items.length;
+      const tbody = document.getElementById('news-table-body');
+      if (items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-row">No news posts yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = items.map(item => `
+        <tr>
+          <td class="td-title">${escHtml(item.title)}</td>
+          <td><span class="tag-pill ${escHtml(item.tag)}">${escHtml(item.tag)}</span></td>
+          <td class="td-muted">${escHtml(item.date || '')}</td>
+          <td><button class="btn btn-danger" style="font-size:11px;padding:6px 14px;" onclick="deleteNews('${escHtml(item.id)}')">✕ Delete</button></td>
+        </tr>
+      `).join('');
+    });
+
+    // Roster — ordered by name
+    const rosterQ = query(collection(db, 'roster'), orderBy('createdAt', 'asc'));
+    unsubRoster = onSnapshot(rosterQ, snap => {
+      const members = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      document.getElementById('stat-roster').textContent = members.length;
+      const tbody = document.getElementById('roster-table-body');
+      if (members.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="4" class="empty-row">No roster members yet</td></tr>';
+        return;
+      }
+      tbody.innerHTML = members.map(m => `
+        <tr>
+          <td class="td-title">${escHtml(m.name)}${m.nation ? `<span style="color:var(--muted);font-size:12px;margin-left:8px;">${escHtml(m.nation)}</span>` : ''}</td>
+          <td><span class="role-pill ${escHtml(m.role)}">${escHtml(ROLE_LABELS[m.role] || m.role)}</span></td>
+          <td class="td-muted">${m.number ? '#' + escHtml(m.number) : '—'}</td>
+          <td><button class="btn btn-danger" style="font-size:11px;padding:6px 14px;" onclick="deleteRosterMember('${escHtml(m.id)}')">✕ Remove</button></td>
+        </tr>
+      `).join('');
+    });
+  }
 
   // ── LOGIN ──
   window.tryLogin = async function() {
@@ -636,71 +695,34 @@
   }
 
   window.logout = async function() {
+    if (unsubNews)   unsubNews();
+    if (unsubRoster) unsubRoster();
     await signOut(auth);
   }
 
-  // ── RENDER ──
-  function renderAll() {
-    renderNews();
-    renderRoster();
-    document.getElementById('stat-news').textContent   = news.length;
-    document.getElementById('stat-roster').textContent = roster.length;
-  }
-
-  function escHtml(s) {
-    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-  }
-
-  function renderNews() {
-    const tbody = document.getElementById('news-table-body');
-    if (news.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-row">No news posts yet</td></tr>';
-      return;
-    }
-    tbody.innerHTML = news.map(item => `
-      <tr>
-        <td class="td-title">${escHtml(item.title)}</td>
-        <td><span class="tag-pill ${escHtml(item.tag)}">${escHtml(item.tag)}</span></td>
-        <td class="td-muted">${escHtml(item.date)}</td>
-        <td><button class="btn btn-danger" style="font-size:11px;padding:6px 14px;" onclick="deleteNews(${item.id})">✕ Delete</button></td>
-      </tr>
-    `).join('');
-  }
-
-  function renderRoster() {
-    const tbody = document.getElementById('roster-table-body');
-    if (roster.length === 0) {
-      tbody.innerHTML = '<tr><td colspan="4" class="empty-row">No roster members yet</td></tr>';
-      return;
-    }
-    tbody.innerHTML = roster.map(m => `
-      <tr>
-        <td class="td-title">${escHtml(m.name)}${m.nation ? `<span style="color:var(--muted);font-size:12px;margin-left:8px;">${escHtml(m.nation)}</span>` : ''}</td>
-        <td><span class="role-pill ${escHtml(m.role)}">${escHtml(ROLE_LABELS[m.role] || m.role)}</span></td>
-        <td class="td-muted">${m.number ? '#' + escHtml(m.number) : '—'}</td>
-        <td><button class="btn btn-danger" style="font-size:11px;padding:6px 14px;" onclick="deleteRosterMember(${m.id})">✕ Remove</button></td>
-      </tr>
-    `).join('');
-  }
-
   // ── NEWS ──
-  window.postNews = function() {
+  window.postNews = async function() {
     const title = document.getElementById('news-title').value.trim();
     const body  = document.getElementById('news-body').value.trim();
     const tag   = document.getElementById('news-tag').value;
-    if (!title || !body) { notify('⚠ Title and content required'); return; }
-    news.unshift({ id: Date.now(), title, body, tag, date: new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }), author: 'Admin' });
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
-    renderAll();
-    clearNewsForm();
-    notify('✓ News published!');
+    if (!title || !body) { notify('⚠ Title and content required'); return;  }
+    try {
+      await addDoc(collection(db, 'news'), {
+        title, body, tag,
+        date: new Date().toLocaleDateString('en-GB', { day:'2-digit', month:'short', year:'numeric' }),
+        author: 'Admin',
+        createdAt: serverTimestamp()
+      });
+      clearNewsForm();
+      notify('✓ News published!');
+    } catch(e) { notify('⚠ Error: ' + e.message); }
   }
 
-  window.deleteNews = function(id) {
-    news = news.filter(n => n.id !== id);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
-    renderAll();
-    notify('Post deleted');
+  window.deleteNews = async function(id) {
+    try {
+      await deleteDoc(doc(db, 'news', id));
+      notify('Post deleted');
+    } catch(e) { notify('⚠ Error: ' + e.message); }
   }
 
   window.clearNewsForm = function() {
@@ -709,24 +731,24 @@
   }
 
   // ── ROSTER ──
-  window.addRosterMember = function() {
+  window.addRosterMember = async function() {
     const name   = document.getElementById('roster-name').value.trim();
     const role   = document.getElementById('roster-role').value;
     const number = document.getElementById('roster-number').value.trim();
     const nation = document.getElementById('roster-nation').value.trim();
     if (!name) { notify('⚠ Name is required'); return; }
-    roster.push({ id: Date.now(), name, role, number, nation });
-    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
-    renderAll();
-    clearRosterForm();
-    notify('✓ Member added!');
+    try {
+      await addDoc(collection(db, 'roster'), { name, role, number, nation, createdAt: serverTimestamp() });
+      clearRosterForm();
+      notify('✓ Member added!');
+    } catch(e) { notify('⚠ Error: ' + e.message); }
   }
 
-  window.deleteRosterMember = function(id) {
-    roster = roster.filter(m => m.id !== id);
-    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
-    renderAll();
-    notify('Member removed');
+  window.deleteRosterMember = async function(id) {
+    try {
+      await deleteDoc(doc(db, 'roster', id));
+      notify('Member removed');
+    } catch(e) { notify('⚠ Error: ' + e.message); }
   }
 
   window.clearRosterForm = function() {
@@ -734,15 +756,21 @@
     document.getElementById('roster-number').value = '';
     document.getElementById('roster-nation').value = '';
   }
-
-  // ── NOTIFY ──
-  function notify(msg) {
-    const el = document.getElementById('notif');
-    el.textContent = msg;
-    el.style.display = 'block';
-    clearTimeout(window._notifTimer);
-    window._notifTimer = setTimeout(() => { el.style.display = 'none'; }, 3000);
-  }
+</script>
+<script>
+  // ── TOPBAR HIDE ON SCROLL ──
+  let lastScroll = 0;
+  window.addEventListener('scroll', () => {
+    const cur = window.scrollY;
+    const bar = document.querySelector('.admin-topbar');
+    if (!bar) return;
+    if (cur > lastScroll && cur > 80) {
+      bar.classList.add('hidden-bar');
+    } else {
+      bar.classList.remove('hidden-bar');
+    }
+    lastScroll = cur;
+  }, { passive: true });
 </script>
 </body>
 </html>
