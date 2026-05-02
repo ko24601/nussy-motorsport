@@ -1237,49 +1237,52 @@
     pointer-events: none;
   }
 
+
   /* ── CUSTOM CURSOR ── */
-  *, *::before, *::after { cursor: none !important; }
+  body.custom-cursor, body.custom-cursor * { cursor: none !important; }
   #cursor {
     position: fixed;
-    width: 16px; height: 16px;
+    top: 0; left: 0;
+    width: 20px; height: 20px;
     border: 1.5px solid var(--neon);
-    border-radius: 0;
     pointer-events: none;
     z-index: 99997;
     transform: translate(-50%, -50%);
-    transition: transform 0.08s ease, width 0.2s, height 0.2s, background 0.2s;
-    mix-blend-mode: normal;
-  }
-  #cursor::before, #cursor::after {
-    content: '';
-    position: absolute;
-    background: var(--neon);
+    transition: width 0.15s, height 0.15s, background 0.15s, box-shadow 0.15s;
+    will-change: transform;
   }
   #cursor::before {
-    width: 1px; height: 6px;
+    content: '';
+    position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    width: 1px; height: 8px;
+    background: var(--neon);
   }
   #cursor::after {
-    width: 6px; height: 1px;
+    content: '';
+    position: absolute;
     top: 50%; left: 50%;
     transform: translate(-50%, -50%);
+    width: 8px; height: 1px;
+    background: var(--neon);
   }
   #cursor.hovering {
-    width: 32px; height: 32px;
-    background: rgba(170,255,0,0.08);
-    border-color: var(--neon);
-    box-shadow: 0 0 12px var(--neon-glow);
+    width: 36px; height: 36px;
+    background: rgba(170,255,0,0.07);
+    box-shadow: 0 0 16px var(--neon-glow);
   }
   #cursor-dot {
     position: fixed;
+    top: 0; left: 0;
     width: 4px; height: 4px;
     background: var(--neon);
     border-radius: 50%;
     pointer-events: none;
-    z-index: 99997;
+    z-index: 99998;
     transform: translate(-50%, -50%);
     box-shadow: 0 0 6px var(--neon-glow);
+    will-change: transform;
   }
 
   /* ── BACK TO TOP ── */
@@ -2301,6 +2304,58 @@
     // Hard fallback — always gone by 5s
     setTimeout(dismiss, 5000);
   })();
+
+  // ── CUSTOM CURSOR ──
+  (function() {
+    // Skip on touch devices
+    if (window.matchMedia('(pointer: coarse)').matches) return;
+
+    const cur = document.getElementById('cursor');
+    const dot = document.getElementById('cursor-dot');
+    if (!cur || !dot) return;
+
+    document.body.classList.add('custom-cursor');
+
+    let cx = -100, cy = -100; // cursor (lagged)
+    let tx = -100, ty = -100; // target (exact mouse)
+
+    document.addEventListener('mousemove', function(e) {
+      tx = e.clientX;
+      ty = e.clientY;
+      // dot follows instantly
+      dot.style.left = tx + 'px';
+      dot.style.top  = ty + 'px';
+    }, { passive: true });
+
+    // cursor follows with slight lag via RAF
+    function loop() {
+      cx += (tx - cx) * 0.18;
+      cy += (ty - cy) * 0.18;
+      cur.style.left = cx + 'px';
+      cur.style.top  = cy + 'px';
+      requestAnimationFrame(loop);
+    }
+    requestAnimationFrame(loop);
+
+    // Hover effect on interactive elements
+    function addHover(el) {
+      el.addEventListener('mouseenter', function() { cur.classList.add('hovering'); });
+      el.addEventListener('mouseleave', function() { cur.classList.remove('hovering'); });
+    }
+    // Apply to existing elements
+    document.querySelectorAll('a, button').forEach(addHover);
+    // Watch for dynamically added elements (news/roster cards)
+    new MutationObserver(function(mutations) {
+      mutations.forEach(function(m) {
+        m.addedNodes.forEach(function(n) {
+          if (n.nodeType === 1) {
+            if (n.matches('a, button')) addHover(n);
+            n.querySelectorAll && n.querySelectorAll('a, button').forEach(addHover);
+          }
+        });
+      });
+    }).observe(document.body, { childList: true, subtree: true });
+  })();
 </script>
 
 <script type="module">
@@ -2602,31 +2657,6 @@
     else bt.classList.remove('visible');
   }, { passive: true });
 
-  // ── CUSTOM CURSOR (desktop only) ──
-  (function() {
-    if (window.matchMedia('(pointer: coarse)').matches) {
-      // Touch device — hide cursor elements and restore default cursor
-      document.getElementById('cursor').style.display = 'none';
-      document.getElementById('cursor-dot').style.display = 'none';
-      document.querySelectorAll('*').forEach(el => el.style.cursor = '');
-      const style = document.createElement('style');
-      style.textContent = '*, *::before, *::after { cursor: auto !important; } a, button { cursor: pointer !important; }';
-      document.head.appendChild(style);
-      return;
-    }
-    const cur = document.getElementById('cursor');
-    const dot = document.getElementById('cursor-dot');
-    document.addEventListener('mousemove', e => {
-      dot.style.left = e.clientX + 'px';
-      dot.style.top  = e.clientY + 'px';
-      cur.style.left = e.clientX + 'px';
-      cur.style.top  = e.clientY + 'px';
-    });
-    document.querySelectorAll('a, button, [onclick]').forEach(el => {
-      el.addEventListener('mouseenter', () => cur.classList.add('hovering'));
-      el.addEventListener('mouseleave', () => cur.classList.remove('hovering'));
-    });
-  })();
 
   // ── HAMBURGER ──
   window.closeMobileNav = function() {
