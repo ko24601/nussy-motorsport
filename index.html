@@ -2564,15 +2564,7 @@
   }, { passive: true });
 
 
-  // ── HAMBURGER ──
-  window.closeMobileNav = function() {
-    document.getElementById('hamburger').classList.remove('open');
-    document.getElementById('nav-mobile').classList.remove('open');
-  }
-  document.getElementById('hamburger').addEventListener('click', function() {
-    this.classList.toggle('open');
-    document.getElementById('nav-mobile').classList.toggle('open');
-  });
+  // hamburger moved to plain script below
 
   // ── PARTICLES ──
   (function() {
@@ -2603,6 +2595,28 @@
     setInterval(spawn, 400);
   })();
 
+</script>
+<script>
+  // ── HAMBURGER (plain script — runs independently of Firebase) ──
+  (function() {
+    var btn = document.getElementById('hamburger');
+    var menu = document.getElementById('nav-mobile');
+    if (!btn || !menu) return;
+    window.closeMobileNav = function() {
+      btn.classList.remove('open');
+      menu.classList.remove('open');
+    };
+    btn.addEventListener('click', function() {
+      btn.classList.toggle('open');
+      menu.classList.toggle('open');
+    });
+    // Close when clicking outside the menu
+    document.addEventListener('click', function(e) {
+      if (menu.classList.contains('open') && !menu.contains(e.target) && !btn.contains(e.target)) {
+        closeMobileNav();
+      }
+    });
+  })();
 </script>
 </body>
 </html>
