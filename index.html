@@ -1347,21 +1347,26 @@
   .nav-hamburger {
     display: none;
     flex-direction: column;
+    justify-content: center;
     gap: 5px;
     background: none;
     border: none;
-    padding: 4px;
-    cursor: none;
+    padding: 8px;
+    cursor: pointer;
+    margin-left: auto;
+    z-index: 600;
   }
   .nav-hamburger span {
     display: block;
     width: 22px;
     height: 2px;
     background: var(--neon);
-    transition: transform 0.3s, opacity 0.3s;
+    border-radius: 1px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    transform-origin: center;
   }
   .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
-  .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+  .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
   .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
   .nav-mobile {
     display: none;
@@ -1723,6 +1728,8 @@
   @media (max-width: 768px) {
     .nav-links { display: none; }
     .nav-hamburger { display: flex; }
+    .nav-live { display: none; }
+    .site-nav { justify-content: space-between; padding: 0 20px; }
   }
   @media (max-width: 768px) {
     .series-section { grid-template-columns: 1fr; }
@@ -1832,10 +1839,10 @@
   </ul>
   <div class="nav-right">
     <span class="nav-live">Season Active</span>
-    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
-      <span></span><span></span><span></span>
-    </button>
   </div>
+  <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
 <div class="nav-mobile" id="nav-mobile">
   <a href="#section-news" onclick="closeMobileNav()">News</a>
@@ -2326,17 +2333,25 @@
     else bt.classList.remove('visible');
   }, { passive: true });
 
-  // ── CUSTOM CURSOR ──
+  // ── CUSTOM CURSOR (desktop only) ──
   (function() {
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      // Touch device — hide cursor elements and restore default cursor
+      document.getElementById('cursor').style.display = 'none';
+      document.getElementById('cursor-dot').style.display = 'none';
+      document.querySelectorAll('*').forEach(el => el.style.cursor = '');
+      const style = document.createElement('style');
+      style.textContent = '*, *::before, *::after { cursor: auto !important; } a, button { cursor: pointer !important; }';
+      document.head.appendChild(style);
+      return;
+    }
     const cur = document.getElementById('cursor');
     const dot = document.getElementById('cursor-dot');
-    let mx = -100, my = -100;
     document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      dot.style.left = mx + 'px';
-      dot.style.top  = my + 'px';
-      cur.style.left = mx + 'px';
-      cur.style.top  = my + 'px';
+      dot.style.left = e.clientX + 'px';
+      dot.style.top  = e.clientY + 'px';
+      cur.style.left = e.clientX + 'px';
+      cur.style.top  = e.clientY + 'px';
     });
     document.querySelectorAll('a, button, [onclick]').forEach(el => {
       el.addEventListener('mouseenter', () => cur.classList.add('hovering'));
