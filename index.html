@@ -1402,31 +1402,103 @@
   .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
   .nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
   .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+  /* ── MOBILE NAV MENU ── */
+  @keyframes menuSlideDown {
+    from { opacity: 0; transform: translateY(-12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes menuLinkIn {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
   .nav-mobile {
     display: none;
     position: fixed;
     top: 48px; left: 0; right: 0;
-    background: rgba(8,8,8,0.97);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
+    background: rgba(8,8,8,0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(170,255,0,0.12);
     z-index: 499;
-    padding: 16px 0;
     flex-direction: column;
+    padding: 8px 0 20px;
+    box-shadow: 0 16px 48px rgba(0,0,0,0.6);
   }
-  .nav-mobile.open { display: flex; }
+  .nav-mobile::before {
+    content: '';
+    display: block;
+    height: 2px;
+    background: linear-gradient(90deg, var(--neon), transparent);
+    box-shadow: 0 0 12px var(--neon-glow);
+    margin-bottom: 8px;
+  }
+  .nav-mobile.open {
+    display: flex;
+    animation: menuSlideDown 0.25s cubic-bezier(0.22,1,0.36,1) both;
+  }
   .nav-mobile a {
     font-family: 'Orbitron', monospace;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 700;
     letter-spacing: 4px;
     text-transform: uppercase;
-    color: var(--muted);
+    color: #555;
     text-decoration: none;
-    padding: 14px 32px;
+    padding: 13px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     border-left: 2px solid transparent;
-    transition: color 0.2s, border-color 0.2s;
+    transition: color 0.2s, border-color 0.2s, background 0.2s, padding-left 0.2s;
+    opacity: 0;
+    animation: menuLinkIn 0.3s ease both;
+    position: relative;
   }
-  .nav-mobile a:hover { color: var(--neon); border-left-color: var(--neon); }
+  .nav-mobile a:nth-child(2) { animation-delay: 0.04s; }
+  .nav-mobile a:nth-child(3) { animation-delay: 0.08s; }
+  .nav-mobile a:nth-child(4) { animation-delay: 0.12s; }
+  .nav-mobile a:nth-child(5) { animation-delay: 0.16s; }
+  .nav-mobile a:nth-child(6) { animation-delay: 0.20s; }
+  .nav-mobile a:nth-child(7) { animation-delay: 0.24s; }
+  .nav-mobile a:nth-child(8) { animation-delay: 0.28s; }
+  .nav-mobile a .nav-icon {
+    width: 28px; height: 28px;
+    background: rgba(170,255,0,0.05);
+    border: 1px solid rgba(170,255,0,0.1);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    flex-shrink: 0;
+    transition: background 0.2s, border-color 0.2s;
+  }
+  .nav-mobile a:active,
+  .nav-mobile a:hover {
+    color: var(--neon);
+    border-left-color: var(--neon);
+    background: rgba(170,255,0,0.03);
+    padding-left: 32px;
+  }
+  .nav-mobile a:active .nav-icon,
+  .nav-mobile a:hover .nav-icon {
+    background: rgba(170,255,0,0.1);
+    border-color: rgba(170,255,0,0.3);
+  }
+  .nav-mobile-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 8px 28px;
+    opacity: 0;
+    animation: menuLinkIn 0.3s ease 0.18s both;
+  }
+  .nav-mobile-footer {
+    padding: 12px 28px 0;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: #2a2a2a;
+    text-transform: uppercase;
+    font-family: 'Orbitron', monospace;
+    opacity: 0;
+    animation: menuLinkIn 0.3s ease 0.3s both;
+  }
 
   /* ── ROSTER SECTION ── */
   .roster-grid {
@@ -2054,13 +2126,15 @@
   </button>
 </nav>
 <div class="nav-mobile" id="nav-mobile">
-  <a href="#section-news" onclick="closeMobileNav()">News</a>
-  <a href="#section-event" onclick="closeMobileNav()">Event</a>
-  <a href="#section-team" onclick="closeMobileNav()">Team</a>
-  <a href="#section-series" onclick="closeMobileNav()">League</a>
-  <a href="#section-roster" onclick="closeMobileNav()">Drivers</a>
-  <a href="https://www.nussymotorsport.store/" target="_blank" onclick="closeMobileNav()">Shop</a>
-  <a href="https://discord.gg/3FcMCvKBUq" target="_blank" onclick="closeMobileNav()">⚡ Discord</a>
+  <a href="#section-news" onclick="closeMobileNav()"><span class="nav-icon">📰</span>News</a>
+  <a href="#section-event" onclick="closeMobileNav()"><span class="nav-icon">🏁</span>Event</a>
+  <a href="#section-team" onclick="closeMobileNav()"><span class="nav-icon">👥</span>Team</a>
+  <a href="#section-series" onclick="closeMobileNav()"><span class="nav-icon">🏎</span>League</a>
+  <a href="#section-roster" onclick="closeMobileNav()"><span class="nav-icon">⚡</span>Drivers</a>
+  <div class="nav-mobile-divider"></div>
+  <a href="https://www.nussymotorsport.store/" target="_blank" onclick="closeMobileNav()"><span class="nav-icon">🛒</span>Shop</a>
+  <a href="https://discord.gg/3FcMCvKBUq" target="_blank" onclick="closeMobileNav()"><span class="nav-icon">💬</span>Discord</a>
+  <div class="nav-mobile-footer">Nussy Motorsport © 2025</div>
 </div>
 
 <!-- DAY COUNTER -->
@@ -2607,8 +2681,17 @@
       menu.classList.remove('open');
     };
     btn.addEventListener('click', function() {
-      btn.classList.toggle('open');
-      menu.classList.toggle('open');
+      var isOpen = menu.classList.contains('open');
+      if (!isOpen) {
+        // Force re-trigger animations by removing and re-adding open
+        menu.classList.remove('open');
+        void menu.offsetWidth; // reflow
+        menu.classList.add('open');
+        btn.classList.add('open');
+      } else {
+        menu.classList.remove('open');
+        btn.classList.remove('open');
+      }
     });
     // Close when clicking outside the menu
     document.addEventListener('click', function(e) {
