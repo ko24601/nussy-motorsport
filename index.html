@@ -1394,6 +1394,105 @@
   }
   .nav-mobile a:hover { color: var(--neon); border-left-color: var(--neon); }
 
+  /* ── ROSTER SECTION ── */
+  .roster-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+  }
+  .roster-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 28px 24px 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
+    animation: fadeIn 0.4s ease both;
+  }
+  .roster-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--neon);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .roster-card:hover { border-color: rgba(170,255,0,0.35); transform: translateY(-3px); box-shadow: 0 8px 32px rgba(170,255,0,0.07); }
+  .roster-card:hover::before { transform: scaleX(1); }
+  .roster-avatar {
+    width: 56px; height: 56px;
+    background: rgba(170,255,0,0.07);
+    border: 1px solid rgba(170,255,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 22px;
+    font-weight: 900;
+    color: var(--neon);
+    margin-bottom: 16px;
+    text-transform: uppercase;
+  }
+  .roster-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 6px;
+    letter-spacing: 1px;
+    word-break: break-word;
+  }
+  .roster-role-badge {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    margin-bottom: 10px;
+    border: 1px solid;
+  }
+  .roster-role-badge.driver       { color: var(--neon); border-color: rgba(170,255,0,0.3); background: rgba(170,255,0,0.06); }
+  .roster-role-badge.reserve      { color: #00cfff; border-color: rgba(0,207,255,0.3); background: rgba(0,207,255,0.06); }
+  .roster-role-badge.management   { color: #FFD700; border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.06); }
+  .roster-role-badge.staff        { color: #cc44ff; border-color: rgba(204,68,255,0.3); background: rgba(204,68,255,0.06); }
+  .roster-number {
+    position: absolute;
+    right: 14px; bottom: 12px;
+    font-family: 'Orbitron', monospace;
+    font-size: 44px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.07);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .roster-delete {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: none;
+    border: none;
+    color: #444;
+    font-size: 14px;
+    cursor: pointer;
+    transition: color 0.2s;
+    display: none;
+  }
+  .roster-delete:hover { color: #ff5555; }
+  body.admin-active .roster-delete { display: block; }
+  .roster-empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 60px;
+    color: var(--muted);
+    font-size: 14px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    border: 1px dashed var(--border);
+  }
+
   /* ── NEWS TAG COLORS ── */
   .tag[data-tag="RESULTS"]      { color: var(--neon); background: rgba(170,255,0,0.08); border-color: rgba(170,255,0,0.25); }
   .tag[data-tag="ANNOUNCEMENT"] { color: #FFD700; background: rgba(255,215,0,0.08); border-color: rgba(255,215,0,0.25); }
@@ -1835,6 +1934,7 @@
     <li><a href="#section-event">Event</a></li>
     <li><a href="#section-team">Team</a></li>
     <li><a href="#section-series">League</a></li>
+    <li><a href="#section-roster">Drivers</a></li>
     <li><a href="https://www.nussymotorsport.store/" target="_blank">Shop</a></li>
   </ul>
   <div class="nav-right">
@@ -1849,6 +1949,7 @@
   <a href="#section-event" onclick="closeMobileNav()">Event</a>
   <a href="#section-team" onclick="closeMobileNav()">Team</a>
   <a href="#section-series" onclick="closeMobileNav()">League</a>
+  <a href="#section-roster" onclick="closeMobileNav()">Drivers</a>
   <a href="https://www.nussymotorsport.store/" target="_blank" onclick="closeMobileNav()">Shop</a>
   <a href="https://discord.gg/3FcMCvKBUq" target="_blank" onclick="closeMobileNav()">⚡ Discord</a>
 </div>
@@ -1936,6 +2037,41 @@
     </div>
   </div>
 
+  <!-- ADMIN ROSTER PANEL -->
+  <div id="admin-roster-panel" style="display:none;background:var(--card);border:1px solid rgba(0,207,255,0.2);padding:32px;margin-top:20px;position:relative;overflow:hidden;">
+    <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:80px;font-weight:900;color:transparent;-webkit-text-stroke:1px rgba(0,207,255,0.04);pointer-events:none;">ROSTER</div>
+    <div class="admin-header">
+      <h3 style="color:#00cfff;">👤 Manage Roster</h3>
+    </div>
+    <div class="admin-grid">
+      <div class="form-group">
+        <label>Name / Gamertag</label>
+        <input type="text" id="roster-name" placeholder="e.g. Xachary Zinsmaster" maxlength="40">
+      </div>
+      <div class="form-group">
+        <label>Role</label>
+        <select id="roster-role">
+          <option value="driver">Race Driver</option>
+          <option value="reserve">Reserve Driver</option>
+          <option value="management">Management</option>
+          <option value="staff">Staff</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Car Number (optional)</label>
+        <input type="text" id="roster-number" placeholder="e.g. 28" maxlength="4">
+      </div>
+      <div class="form-group">
+        <label>Nationality / Tag (optional)</label>
+        <input type="text" id="roster-nation" placeholder="e.g. 🇩🇪 GER" maxlength="20">
+      </div>
+      <div class="admin-actions">
+        <button class="btn btn-primary" style="background:#00cfff;" onclick="addRosterMember()">⬆ Add Member</button>
+        <button class="btn btn-ghost" onclick="clearRosterForm()">Clear</button>
+      </div>
+    </div>
+  </div>
+
   <!-- NEWS FEED -->
   <div id="section-news" class="section-label">
     <h2>Latest News</h2>
@@ -1977,6 +2113,16 @@
       <div class="sp-price">€24.99</div>
       <div class="sp-label">Team Cap</div>
     </a>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- DRIVERS & STAFF -->
+  <div id="section-roster" class="section-label" style="margin-top:48px;">
+    <h2>Drivers &amp; Staff</h2>
+  </div>
+  <div class="roster-grid" id="roster-feed">
+    <div class="roster-empty">No roster yet — check back soon</div>
   </div>
 
   <!-- CTA BANNER -->
@@ -2121,11 +2267,17 @@
     if (user) {
       isAdmin = true;
       document.getElementById('admin-panel').classList.add('visible');
+      document.getElementById('admin-roster-panel').style.display = 'block';
+      document.body.classList.add('admin-active');
       renderNews();
+      renderRoster();
     } else {
       isAdmin = false;
       document.getElementById('admin-panel').classList.remove('visible');
+      document.getElementById('admin-roster-panel').style.display = 'none';
+      document.body.classList.remove('admin-active');
       renderNews();
+      renderRoster();
     }
   });
 
@@ -2293,6 +2445,61 @@
     setTimeout(type, 800);
   })();
 
+  // ── ROSTER ──
+  const ROSTER_KEY = 'nussy_roster';
+  let roster = JSON.parse(localStorage.getItem(ROSTER_KEY) || '[]');
+
+  const ROLE_LABELS = {
+    driver:     'Race Driver',
+    reserve:    'Reserve Driver',
+    management: 'Management',
+    staff:      'Staff'
+  };
+
+  function renderRoster() {
+    const feed = document.getElementById('roster-feed');
+    if (roster.length === 0) {
+      feed.innerHTML = '<div class="roster-empty">No roster members yet</div>';
+      return;
+    }
+    feed.innerHTML = roster.map((m, i) => `
+      <div class="roster-card" style="animation-delay:${i * 0.05}s">
+        <button class="roster-delete" onclick="deleteRosterMember(${m.id})" title="Remove">✕</button>
+        <div class="roster-avatar">${escHtml(m.name.charAt(0))}</div>
+        <div class="roster-name">${escHtml(m.name)}</div>
+        <span class="roster-role-badge ${escHtml(m.role)}">${escHtml(ROLE_LABELS[m.role] || m.role)}</span>
+        ${m.nation ? `<div style="font-size:12px;color:var(--muted);letter-spacing:2px;margin-top:4px;">${escHtml(m.nation)}</div>` : ''}
+        ${m.number ? `<div class="roster-number">${escHtml(m.number)}</div>` : ''}
+      </div>
+    `).join('');
+  }
+
+  window.addRosterMember = function() {
+    const name   = document.getElementById('roster-name').value.trim();
+    const role   = document.getElementById('roster-role').value;
+    const number = document.getElementById('roster-number').value.trim();
+    const nation = document.getElementById('roster-nation').value.trim();
+    if (!name) { notify('⚠ Name is required'); return; }
+    roster.push({ id: Date.now(), name, role, number, nation });
+    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
+    renderRoster();
+    clearRosterForm();
+    notify('✓ Member added!');
+  }
+
+  window.deleteRosterMember = function(id) {
+    roster = roster.filter(m => m.id !== id);
+    localStorage.setItem(ROSTER_KEY, JSON.stringify(roster));
+    renderRoster();
+    notify('Member removed');
+  }
+
+  window.clearRosterForm = function() {
+    document.getElementById('roster-name').value = '';
+    document.getElementById('roster-number').value = '';
+    document.getElementById('roster-nation').value = '';
+  }
+
   // ── NAV ACTIVE HIGHLIGHT ──
   (function() {
     const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
@@ -2311,6 +2518,7 @@
 
   // ── INIT ──
   renderNews();
+  renderRoster();
 
   // Close overlay on backdrop click
   document.getElementById('login-overlay').addEventListener('click', function(e) {
