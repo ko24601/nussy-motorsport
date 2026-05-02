@@ -1142,7 +1142,311 @@
     letter-spacing: 3px;
   }
 
+  /* ── STICKY NAV ── */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 500;
+    background: rgba(8,8,8,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+  .nav-links {
+    display: flex;
+    gap: 0;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    padding: 0 18px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid transparent;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .nav-links a:hover {
+    color: var(--neon);
+    border-bottom-color: var(--neon);
+  }
+  .nav-links a.active {
+    color: var(--neon);
+    border-bottom-color: var(--neon);
+  }
+  .nav-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+  }
+  .nav-live {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--neon);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 3px;
+  }
+  .nav-live::before {
+    content: '';
+    width: 6px; height: 6px;
+    background: var(--neon);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--neon-glow);
+    animation: livePulse 1.5s ease-in-out infinite;
+  }
+  @keyframes livePulse {
+    0%,100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.4; transform: scale(0.7); }
+  }
+
+  /* ── HERO GRID BG ── */
+  .hero {
+    background-image:
+      linear-gradient(rgba(170,255,0,0.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(170,255,0,0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+    background-position: center center;
+  }
+
+  /* ── DRIVER CARDS ── */
+  .driver-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .driver-card {
+    background: var(--black);
+    border: 1px solid var(--border);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+  .driver-card:hover {
+    border-color: rgba(170,255,0,0.3);
+    transform: translateY(-2px);
+  }
+  .driver-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--neon);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+  .driver-card:hover::before { transform: scaleX(1); }
+  .driver-avatar {
+    width: 48px; height: 48px;
+    background: rgba(170,255,0,0.08);
+    border: 1px solid rgba(170,255,0,0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 18px;
+    font-weight: 900;
+    color: var(--neon);
+    margin-bottom: 14px;
+  }
+  .driver-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 4px;
+    letter-spacing: 1px;
+  }
+  .driver-role {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .driver-number {
+    position: absolute;
+    right: 14px;
+    bottom: 10px;
+    font-family: 'Orbitron', monospace;
+    font-size: 40px;
+    font-weight: 900;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(170,255,0,0.08);
+    line-height: 1;
+  }
+
+  /* ── EVENT IMAGE OVERLAY ── */
+  .event-img-wrap {
+    position: relative;
+    margin-top: 32px;
+    overflow: hidden;
+  }
+  .event-img-wrap img {
+    width: 100%;
+    display: block;
+    border: 1px solid rgba(170,255,0,0.1);
+  }
+  .event-img-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(8,8,8,0.92));
+    padding: 32px 28px 20px;
+  }
+  .event-img-overlay .ov-date {
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--neon);
+    margin-bottom: 6px;
+  }
+  .event-img-overlay .ov-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(14px, 2vw, 20px);
+    font-weight: 900;
+    color: #fff;
+  }
+
+  /* ── SHOP PREVIEW ── */
+  .shop-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .shop-preview-item {
+    background: var(--black);
+    border: 1px solid var(--border);
+    overflow: hidden;
+    position: relative;
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .shop-preview-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.7;
+    transition: opacity 0.3s, transform 0.3s;
+  }
+  .shop-preview-item:hover img {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  .shop-preview-item .sp-label {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    padding: 16px 10px 8px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: #fff;
+  }
+  .shop-preview-item .sp-price {
+    position: absolute;
+    top: 8px; right: 8px;
+    background: var(--neon);
+    color: var(--black);
+    font-family: 'Orbitron', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+  }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(170,255,0,0.15), transparent);
+    margin: 48px 0 0;
+  }
+
+  /* ── FOOTER SOCIAL ── */
+  .footer-socials {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+  }
+  .footer-social-link {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .footer-social-link:hover { color: var(--neon); }
+  .footer-bottom {
+    border-top: 1px solid var(--border);
+    padding: 32px 40px;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .footer-brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .footer-brand span:first-child {
+    font-family: 'Orbitron', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--neon);
+    letter-spacing: 3px;
+  }
+  .footer-brand span:last-child {
+    font-size: 11px;
+    color: #333;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .footer-center {
+    text-align: center;
+    font-size: 10px;
+    color: #2a2a2a;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+  }
+  .footer-right {
+    display: flex;
+    justify-content: flex-end;
+  }
+
   /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    .series-section { grid-template-columns: 1fr; }
+    .shop-preview { grid-template-columns: repeat(3, 1fr); }
+  }
   @media (max-width: 640px) {
     header { padding: 32px 20px; }
     main { padding: 0 20px 40px; }
@@ -1150,7 +1454,14 @@
     .about-strip { grid-template-columns: 1fr; }
     .stat-grid { grid-template-columns: repeat(3, 1fr); }
     .header-actions .btn-ghost { display: none; }
-    footer { flex-direction: column; gap: 8px; text-align: center; }
+    .site-nav { padding: 0 20px; }
+    .nav-links li:nth-child(n+3) { display: none; }
+    .footer-bottom { grid-template-columns: 1fr; gap: 16px; }
+    .footer-right { justify-content: flex-start; }
+    .footer-center { text-align: left; }
+    .shop-preview { grid-template-columns: repeat(3, 1fr); }
+    .driver-cards { grid-template-columns: 1fr 1fr; }
+    .event-section { padding: 28px; }
   }
 </style>
 </head>
@@ -1212,6 +1523,20 @@
   </div>
 </div>
 
+<!-- STICKY NAV -->
+<nav class="site-nav">
+  <ul class="nav-links">
+    <li><a href="#section-news">News</a></li>
+    <li><a href="#section-event">Event</a></li>
+    <li><a href="#section-team">Team</a></li>
+    <li><a href="#section-series">League</a></li>
+    <li><a href="https://www.nussymotorsport.store/" target="_blank">Shop</a></li>
+  </ul>
+  <div class="nav-right">
+    <span class="nav-live">Season Active</span>
+  </div>
+</nav>
+
 <!-- DAY COUNTER -->
 <div class="day-counter">
   <span class="day-num" id="day-count">DAY 1</span>
@@ -1229,7 +1554,7 @@
 </section>
 
 <!-- EVENT SECTION -->
-<div style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
+<div id="section-event" style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
   <div class="event-section reveal">
     <div class="event-sponsor">Powered by Group S</div>
     <h2>Challenge the <span>Pro's</span> – Powered by Group S.</h2>
@@ -1254,7 +1579,13 @@
       <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-primary btn-large">Register Now</a>
       <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-ghost btn-large">⚡ Join Discord</a>
     </div>
-    <img src="group-s.jpg" alt="Nussy Motorsport AMG GT3 — Group S" style="width:100%;margin-top:32px;display:block;border:1px solid rgba(170,255,0,0.1);">
+    <div class="event-img-wrap">
+      <img src="group-s.jpg" alt="Nussy Motorsport AMG GT3 — Group S">
+      <div class="event-img-overlay">
+        <div class="ov-date">◆ May 10th, 2026 · ACC</div>
+        <div class="ov-title">Community vs. Drivers — Group S Challenge</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -1294,15 +1625,17 @@
   </div>
 
   <!-- NEWS FEED -->
-  <div class="section-label">
+  <div id="section-news" class="section-label">
     <h2>Latest News</h2>
   </div>
   <div id="news-feed">
     <div class="news-empty">No news yet — check back soon</div>
   </div>
 
+  <div class="section-divider"></div>
+
   <!-- PADDOCK SHOP -->
-  <div class="section-label">
+  <div class="section-label" style="margin-top:48px;">
     <h2>Paddock Shop</h2>
   </div>
   <a href="https://www.nussymotorsport.store/" target="_blank" style="text-decoration:none;">
@@ -1316,9 +1649,28 @@
       <span style="font-family:'Rajdhani',sans-serif;font-weight:700;font-size:13px;letter-spacing:2px;text-transform:uppercase;padding:14px 28px;background:var(--neon);color:var(--black);clip-path:polygon(8px 0%,100% 0%,calc(100% - 8px) 100%,0% 100%);white-space:nowrap;flex-shrink:0;">Visit Store →</span>
     </div>
   </a>
+  <div class="shop-preview reveal">
+    <a href="https://www.nussymotorsport.store/" target="_blank" class="shop-preview-item">
+      <img src="store/hoodie.jpg" alt="Hoodie" onerror="this.style.display='none'">
+      <div class="sp-price">€65</div>
+      <div class="sp-label">Team Hoodie</div>
+    </a>
+    <a href="https://www.nussymotorsport.store/" target="_blank" class="shop-preview-item">
+      <img src="store/tshirt.jpg" alt="T-Shirt" onerror="this.style.display='none'">
+      <div class="sp-price">€49.99</div>
+      <div class="sp-label">Race T-Shirt</div>
+    </a>
+    <a href="https://www.nussymotorsport.store/" target="_blank" class="shop-preview-item">
+      <img src="store/cap.jpg" alt="Cap" onerror="this.style.display='none'">
+      <div class="sp-price">€24.99</div>
+      <div class="sp-label">Team Cap</div>
+    </a>
+  </div>
+
+  <div class="section-divider"></div>
 
   <!-- ABOUT -->
-  <div class="section-label">
+  <div id="section-team" class="section-label" style="margin-top:48px;">
     <h2>About The Team</h2>
   </div>
   <div class="about-strip">
@@ -1332,8 +1684,10 @@
     </div>
   </div>
 
+  <div class="section-divider"></div>
+
   <!-- CURRENT RACING SERIES -->
-  <div class="section-label">
+  <div id="section-series" class="section-label" style="margin-top:48px;">
     <h2>Current Racing Series</h2>
   </div>
   <div class="series-section reveal">
@@ -1341,9 +1695,19 @@
       <div class="series-badge">Quantum Racing League</div>
       <h2>Dominating the Quantum Racing League.</h2>
       <p>Our journey in the QRL continues. We are proud to announce our entry into the <strong style="color:#fff;">F125 T2</strong> tier with our drivers:</p>
-      <div class="series-drivers">
-        <span class="driver-chip">roi</span>
-        <span class="driver-chip">Xachary Zinsmaster</span>
+      <div class="driver-cards">
+        <div class="driver-card">
+          <div class="driver-avatar">R</div>
+          <div class="driver-name">roi</div>
+          <div class="driver-role">Race Driver · F125 T2</div>
+          <div class="driver-number">01</div>
+        </div>
+        <div class="driver-card">
+          <div class="driver-avatar">X</div>
+          <div class="driver-name">Xachary Zinsmaster</div>
+          <div class="driver-role">Race Driver · F125 T2</div>
+          <div class="driver-number">02</div>
+        </div>
       </div>
       <p>While we prepare for the season opener in <strong style="color:#fff;">Bahrain</strong>, we are always looking for the next talent to join our ranks.</p>
       <div class="series-cta">
@@ -1387,9 +1751,26 @@
 
 </main>
 
-<footer>
-  <span>© Nussymotorsport® — All Rights Reserved</span>
-  <span>Nussymotorsport.de</span>
+<footer style="border-top:1px solid var(--border);padding:0;">
+  <div class="footer-bottom">
+    <div class="footer-brand">
+      <span>NUSSY MOTORSPORT</span>
+      <span>© 2026 · All Rights Reserved</span>
+    </div>
+    <div class="footer-center">Nussymotorsport.de</div>
+    <div class="footer-right">
+      <div class="footer-socials">
+        <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="footer-social-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057.1 18.08.114 18.1.134 18.11a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028c.462-.63.874-1.295 1.226-1.994.021-.04.001-.088-.041-.104a13.2 13.2 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03z"/></svg>
+          Discord
+        </a>
+        <a href="https://www.nussymotorsport.store/" target="_blank" class="footer-social-link">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Store
+        </a>
+      </div>
+    </div>
+  </div>
 </footer>
 
 <script type="module">
@@ -1591,6 +1972,22 @@
     }
     // Start after hero reveals
     setTimeout(type, 800);
+  })();
+
+  // ── NAV ACTIVE HIGHLIGHT ──
+  (function() {
+    const navLinks = document.querySelectorAll('.nav-links a[href^="#"]');
+    const sections = Array.from(navLinks).map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          navLinks.forEach(a => a.classList.remove('active'));
+          const link = document.querySelector(`.nav-links a[href="#${e.target.id}"]`);
+          if (link) link.classList.add('active');
+        }
+      });
+    }, { threshold: 0.3 });
+    sections.forEach(s => obs.observe(s));
   })();
 
   // ── INIT ──
