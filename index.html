@@ -1913,25 +1913,6 @@
 <!-- RACING LINE -->
 <div class="racing-line"></div>
 
-<!-- LOGIN MODAL -->
-<div id="login-overlay">
-  <div class="login-box">
-    <button class="login-close" onclick="closeLogin()">✕</button>
-    <h3>Admin Access</h3>
-    <p>Enter credentials to manage news</p>
-    <div class="form-group">
-      <label>Email</label>
-      <input type="email" id="admin-email" placeholder="admin@nussymotorsport.de" onkeydown="if(event.key==='Enter')tryLogin()">
-    </div>
-    <div class="form-group" style="margin-top:12px;">
-      <label>Password</label>
-      <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
-    </div>
-    <p class="login-error" id="login-error">⚠ Incorrect credentials</p>
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:48px;" onclick="tryLogin()">Authenticate</button>
-  </div>
-</div>
-
 <!-- NOTIFICATION -->
 <div id="notif"></div>
 
@@ -1945,7 +1926,7 @@
     </div>
     <div class="header-actions">
       <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-ghost" id="discord-btn">⚡ Discord</a>
-      <button class="btn btn-primary" onclick="openLogin()">Admin</button>
+      <a href="admin.html" class="btn btn-primary">Admin</a>
     </div>
   </div>
 </header>
@@ -2043,75 +2024,6 @@
 
 <!-- MAIN CONTENT -->
 <main>
-
-  <!-- ADMIN PANEL -->
-  <div id="admin-panel">
-    <div class="admin-header">
-      <h3>📡 Post News Update</h3>
-      <button class="btn btn-ghost" style="font-size:11px;" onclick="logout()">Logout</button>
-    </div>
-    <div class="admin-grid">
-      <div class="form-group">
-        <label>Headline</label>
-        <input type="text" id="news-title" placeholder="e.g. Race 5 Results — Monza Sprint" maxlength="120">
-      </div>
-      <div class="form-group">
-        <label>Category</label>
-        <select id="news-tag">
-          <option value="RESULTS">Results</option>
-          <option value="ANNOUNCEMENT">Announcement</option>
-          <option value="DRIVER NEWS">Driver News</option>
-          <option value="TECHNICAL">Technical</option>
-          <option value="LEAGUE NEWS">League News</option>
-        </select>
-      </div>
-      <div class="form-group full">
-        <label>Content</label>
-        <textarea id="news-body" placeholder="Write your news update here..." maxlength="1000"></textarea>
-      </div>
-      <div class="admin-actions">
-        <button class="btn btn-primary" onclick="postNews()">⬆ Publish</button>
-        <button class="btn btn-ghost" onclick="clearForm()">Clear</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ADMIN ROSTER PANEL -->
-  <div id="admin-roster-panel" style="display:none;background:var(--card);border:1px solid rgba(0,207,255,0.2);padding:32px;margin-top:20px;position:relative;overflow:hidden;">
-    <div style="position:absolute;right:20px;top:50%;transform:translateY(-50%);font-family:'Orbitron',monospace;font-size:80px;font-weight:900;color:transparent;-webkit-text-stroke:1px rgba(0,207,255,0.04);pointer-events:none;">ROSTER</div>
-    <div class="admin-header">
-      <h3 style="color:#00cfff;">👤 Manage Roster</h3>
-    </div>
-    <div class="admin-grid">
-      <div class="form-group">
-        <label>Name / Gamertag</label>
-        <input type="text" id="roster-name" placeholder="e.g. Xachary Zinsmaster" maxlength="40">
-      </div>
-      <div class="form-group">
-        <label>Role</label>
-        <select id="roster-role">
-          <option value="driver">Race Driver</option>
-          <option value="reserve">Reserve Driver</option>
-          <option value="founder">Founder / CEO</option>
-          <option value="developer">Developer</option>
-          <option value="management">Management</option>
-          <option value="staff">Staff</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label>Car Number (optional)</label>
-        <input type="text" id="roster-number" placeholder="e.g. 28" maxlength="4">
-      </div>
-      <div class="form-group">
-        <label>Nationality / Tag (optional)</label>
-        <input type="text" id="roster-nation" placeholder="e.g. 🇩🇪 GER" maxlength="20">
-      </div>
-      <div class="admin-actions">
-        <button class="btn btn-primary" style="background:#00cfff;" onclick="addRosterMember()">⬆ Add Member</button>
-        <button class="btn btn-ghost" onclick="clearRosterForm()">Clear</button>
-      </div>
-    </div>
-  </div>
 
   <!-- NEWS FEED -->
   <div id="section-news" class="section-label">
