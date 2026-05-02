@@ -1152,45 +1152,76 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 32px;
-    transition: opacity 0.6s ease, visibility 0.6s ease;
+    gap: 28px;
+    transition: opacity 0.7s ease, transform 0.7s ease;
   }
-  #loader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+  #loader.hidden {
+    opacity: 0;
+    transform: scale(1.04);
+    pointer-events: none;
+  }
+  /* Corner accents */
+  #loader::before, #loader::after {
+    content: '';
+    position: absolute;
+    width: 60px; height: 60px;
+    border-color: rgba(170,255,0,0.15);
+    border-style: solid;
+  }
+  #loader::before { top: 32px; left: 32px; border-width: 2px 0 0 2px; }
+  #loader::after  { bottom: 32px; right: 32px; border-width: 0 2px 2px 0; }
+  .loader-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 28px;
+    animation: loaderFadeIn 0.5s ease both;
+  }
+  @keyframes loaderFadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
   .loader-logo {
-    width: 90px;
-    height: 90px;
-    animation: loaderSpin 1.2s cubic-bezier(0.34,1.56,0.64,1) both;
+    width: 80px;
+    height: 80px;
+    filter: drop-shadow(0 0 20px rgba(170,255,0,0.4));
+    animation: loaderPulse 1.5s ease-in-out infinite;
   }
-  @keyframes loaderSpin {
-    from { opacity: 0; transform: rotate(-180deg) scale(0.3); }
-    to   { opacity: 1; transform: rotate(0deg) scale(1); }
+  @keyframes loaderPulse {
+    0%,100% { filter: drop-shadow(0 0 20px rgba(170,255,0,0.4)); transform: scale(1); }
+    50%     { filter: drop-shadow(0 0 40px rgba(170,255,0,0.8)); transform: scale(1.05); }
+  }
+  .loader-title {
+    font-family: 'Orbitron', monospace;
+    font-size: clamp(18px, 4vw, 26px);
+    font-weight: 900;
+    color: var(--neon);
+    letter-spacing: 4px;
+    text-shadow: 0 0 30px var(--neon-glow);
+    text-align: center;
   }
   .loader-bar-wrap {
-    width: 200px;
+    width: 240px;
     height: 2px;
     background: var(--border);
     overflow: hidden;
+    position: relative;
   }
   .loader-bar {
     height: 100%;
+    width: 0%;
     background: var(--neon);
     box-shadow: 0 0 12px var(--neon-glow);
-    animation: loaderFill 1.4s ease forwards;
+    transition: width 0.05s linear;
   }
-  @keyframes loaderFill {
-    from { width: 0%; }
-    to   { width: 100%; }
-  }
-  .loader-text {
+  .loader-status {
     font-family: 'Orbitron', monospace;
-    font-size: 10px;
-    letter-spacing: 6px;
+    font-size: 9px;
+    letter-spacing: 5px;
     color: var(--muted);
     text-transform: uppercase;
-    animation: loaderBlink 0.8s step-end infinite;
-  }
-  @keyframes loaderBlink {
-    0%,100% { opacity: 1; } 50% { opacity: 0.3; }
+    min-height: 14px;
+    text-align: center;
   }
 
   /* ── SCROLL PROGRESS ── */
@@ -1856,9 +1887,12 @@
 
 <!-- LOADER -->
 <div id="loader">
-  <img src="logo.png" alt="Nussy Motorsport" class="loader-logo">
-  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
-  <div class="loader-text">Initialising Systems</div>
+  <div class="loader-inner">
+    <img src="logo.png" alt="Nussy Motorsport" class="loader-logo">
+    <div class="loader-title">NUSSY MOTORSPORT</div>
+    <div class="loader-bar-wrap"><div class="loader-bar" id="loader-bar"></div></div>
+    <div class="loader-status" id="loader-status">Initialising Systems</div>
+  </div>
 </div>
 
 <!-- SCROLL PROGRESS -->
@@ -2526,9 +2560,35 @@
   });
 
   // ── LOADER ──
-  window.addEventListener('load', () => {
-    setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1600);
-  });
+  (function() {
+    const bar = document.getElementById('loader-bar');
+    const status = document.getElementById('loader-status');
+    const loader = document.getElementById('loader');
+    const steps = [
+      [15,  'Loading Assets'],
+      [40,  'Connecting Systems'],
+      [65,  'Authenticating'],
+      [85,  'Preparing Telemetry'],
+      [100, 'Ready'],
+    ];
+    let step = 0;
+    function tick() {
+      if (step >= steps.length) {
+        setTimeout(() => loader.classList.add('hidden'), 400);
+        // Remove from DOM after transition
+        setTimeout(() => loader.remove(), 1200);
+        return;
+      }
+      const [pct, label] = steps[step++];
+      bar.style.width = pct + '%';
+      status.textContent = label;
+      setTimeout(tick, step === steps.length ? 300 : 320);
+    }
+    // Start after a brief pause so fonts load
+    setTimeout(tick, 200);
+    // Hard fallback — always dismiss after 4s no matter what
+    setTimeout(() => { loader.classList.add('hidden'); setTimeout(() => loader.remove(), 1000); }, 4000);
+  })();
 
   // ── SCROLL PROGRESS ──
   window.addEventListener('scroll', () => {
