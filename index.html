@@ -338,6 +338,192 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  /* ── GLITCH TITLE ── */
+  @keyframes glitch1 {
+    0%, 90%, 100% { clip-path: none; transform: none; }
+    92% { clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%); transform: translateX(-4px); }
+    94% { clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%); transform: translateX(4px); }
+    96% { clip-path: polygon(0 10%, 100% 10%, 100% 30%, 0 30%); transform: translateX(-2px); }
+  }
+  @keyframes glitch2 {
+    0%, 90%, 100% { clip-path: none; transform: none; opacity: 0; }
+    92% { clip-path: polygon(0 60%, 100% 60%, 100% 75%, 0 75%); transform: translateX(6px); opacity: 0.7; color: #ff003c; }
+    94% { clip-path: polygon(0 25%, 100% 25%, 100% 45%, 0 45%); transform: translateX(-6px); opacity: 0.7; color: #00ffff; }
+    96% { opacity: 0; }
+  }
+  .glitch-wrap {
+    position: relative;
+    display: inline-block;
+  }
+  .glitch-wrap::before,
+  .glitch-wrap::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    font-family: 'Orbitron', monospace;
+    font-size: inherit;
+    font-weight: 900;
+    color: var(--neon);
+    text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(170,255,0,0.15);
+    letter-spacing: 2px;
+  }
+  .glitch-wrap::before { animation: glitch1 6s infinite; }
+  .glitch-wrap::after  { animation: glitch2 6s infinite; }
+
+  /* ── NEON PULSE ── */
+  @keyframes neonPulse {
+    0%, 100% { text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(170,255,0,0.15); }
+    50% { text-shadow: 0 0 30px rgba(170,255,0,0.6), 0 0 60px rgba(170,255,0,0.3), 0 0 100px rgba(170,255,0,0.1); }
+  }
+  .brand h1 { animation: neonPulse 3s ease-in-out infinite; }
+
+  /* ── RACING LINE ── */
+  @keyframes racingLine {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(200vw); }
+  }
+  .racing-line {
+    position: fixed;
+    top: 0; left: 0;
+    width: 200px;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon), transparent);
+    box-shadow: 0 0 12px var(--neon-glow);
+    animation: racingLine 4s linear infinite;
+    z-index: 10000;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* ── CARD HOVER GLOW ── */
+  .news-card {
+    transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s !important;
+  }
+  .news-card:hover {
+    border-color: rgba(170,255,0,0.4) !important;
+    transform: translateY(-4px) !important;
+    box-shadow: 0 8px 32px rgba(170,255,0,0.08), 0 0 0 1px rgba(170,255,0,0.1) !important;
+  }
+
+  /* ── STAT COUNTER ANIMATION ── */
+  @keyframes countUp {
+    from { opacity: 0; transform: scale(0.7); }
+    to   { opacity: 1; transform: scale(1); }
+  }
+  .stat-block .num {
+    display: inline-block;
+    animation: none;
+  }
+  .stat-block .num.animate {
+    animation: countUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  /* ── TICKER HOVER PAUSE ── */
+  .ticker:hover .ticker-track { animation-play-state: paused; }
+
+  /* ── BUTTON RIPPLE ── */
+  .btn {
+    position: relative;
+    overflow: hidden;
+  }
+  .btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0.12);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .btn:active::after { opacity: 1; }
+
+  /* ── EVENT SECTION SHIMMER ── */
+  @keyframes shimmer {
+    0% { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+  .event-sponsor {
+    background-image: linear-gradient(90deg, var(--neon) 40%, #fff 50%, var(--neon) 60%);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: shimmer 3s linear infinite;
+    border: 1px solid rgba(170,255,0,0.3) !important;
+    padding: 4px 12px !important;
+  }
+
+  /* ── HERO SUBTITLE TYPEWRITER ── */
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  .cursor {
+    display: inline-block;
+    width: 2px;
+    height: 1em;
+    background: var(--neon);
+    margin-left: 2px;
+    vertical-align: middle;
+    animation: blink 1s step-end infinite;
+  }
+
+  /* ── SERIES SECTION PULSE BORDER ── */
+  @keyframes borderPulse {
+    0%, 100% { border-left-color: var(--neon); }
+    50% { border-left-color: var(--neon-dim); box-shadow: -4px 0 20px var(--neon-glow); }
+  }
+  .series-main { animation: borderPulse 2.5s ease-in-out infinite; }
+
+  /* ── LOGO SPIN-IN ── */
+  @keyframes logoReveal {
+    from { opacity: 0; transform: rotate(-180deg) scale(0); }
+    to   { opacity: 1; transform: rotate(0deg) scale(1); }
+  }
+  .logo-mark img { animation: logoReveal 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) both; }
+
+  /* ── HEADER SLIDE DOWN ── */
+  @keyframes headerSlide {
+    from { opacity: 0; transform: translateY(-40px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  header { animation: headerSlide 0.6s ease both; }
+
+  /* ── DAY COUNTER GLOW PULSE ── */
+  @keyframes dayPulse {
+    0%, 100% { text-shadow: 0 0 20px var(--neon-glow); }
+    50% { text-shadow: 0 0 40px rgba(170,255,0,0.8), 0 0 80px rgba(170,255,0,0.3); }
+  }
+  .day-counter .day-num { animation: dayPulse 2s ease-in-out infinite; }
+
   /* ── ADMIN PANEL ── */
   #admin-panel {
     display: none;
@@ -970,6 +1156,9 @@
 </head>
 <body>
 
+<!-- RACING LINE -->
+<div class="racing-line"></div>
+
 <!-- LOGIN MODAL -->
 <div id="login-overlay">
   <div class="login-box">
@@ -997,7 +1186,7 @@
   <div class="header-inner">
     <div class="logo-mark"><img src="logo.png" alt="Nussy Motorsport" style="width:48px;height:48px;object-fit:contain;clip-path:none;background:none;"></div>
     <div class="brand">
-      <h1>NUSSY MOTORSPORT</h1>
+      <h1><span class="glitch-wrap" data-text="NUSSY MOTORSPORT">NUSSY MOTORSPORT</span></h1>
       <p>Sim Racing Esports · Est. 2026</p>
     </div>
     <div class="header-actions">
@@ -1033,7 +1222,7 @@
 </div>
 
 <!-- HERO -->
-<section class="hero">
+<section class="hero reveal">
   <div class="hero-label">Nussy Motorsport</div>
   <h2>From Sim to Asphalt: The <em>Evolution</em> of Nussy Motorsport.</h2>
   <p>We are more than a sim-racing team. We are a community of high-performance athletes, driven by precision, professionalism, and the ultimate goal: the real-world karting track.</p>
@@ -1041,7 +1230,7 @@
 
 <!-- EVENT SECTION -->
 <div style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
-  <div class="event-section">
+  <div class="event-section reveal">
     <div class="event-sponsor">Powered by Group S</div>
     <h2>Challenge the <span>Pro's</span> – Powered by Group S.</h2>
     <p>Are you fast enough to beat the best? On <strong style="color:#fff;">May 10th, 2026</strong>, Nussy Motorsport is hosting a massive "Community vs. Drivers" event in ACC.</p>
@@ -1133,11 +1322,11 @@
     <h2>About The Team</h2>
   </div>
   <div class="about-strip">
-    <div class="about-block">
+    <div class="about-block reveal-left">
       <h3>The Vision</h3>
       <p>Founded by Marcel Hartwich, Nussy Motorsport is a competitive powerhouse in the sim racing esports arena. Sim racing isn't just a simulation — it's the ultimate frontier of modern motorsport, where engineering meets intuition and virtual asphalt demands the same respect as any physical track.</p>
     </div>
-    <div class="about-block">
+    <div class="about-block reveal-right">
       <h3>The Philosophy</h3>
       <p>From the tight chicanes of Monza to the grueling endurance of the Nürburgring, every driver under the Nussy banner carries a singular vision: to push beyond the limit. Success is about discipline in every practice lap and the courage to find the gap where others see a wall.</p>
     </div>
@@ -1147,7 +1336,7 @@
   <div class="section-label">
     <h2>Current Racing Series</h2>
   </div>
-  <div class="series-section">
+  <div class="series-section reveal">
     <div class="series-main">
       <div class="series-badge">Quantum Racing League</div>
       <h2>Dominating the Quantum Racing League.</h2>
@@ -1181,7 +1370,7 @@
     </div>
   </div>
 
-  <div class="stat-grid">
+  <div class="stat-grid reveal">
     <div class="stat-block">
       <div class="num">GT3</div>
       <div class="label">Class</div>
@@ -1351,6 +1540,57 @@
     today.setHours(0,0,0,0);
     const day = Math.floor((today - start) / 86400000) + 1;
     document.getElementById('day-count').textContent = 'DAY ' + day;
+  })();
+
+  // ── SCROLL REVEAL ──
+  (function() {
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => obs.observe(el));
+  })();
+
+  // ── STAT COUNTER ──
+  (function() {
+    const statObs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.querySelectorAll('.num').forEach((el, i) => {
+            setTimeout(() => el.classList.add('animate'), i * 120);
+          });
+          statObs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.3 });
+    const sg = document.querySelector('.stat-grid');
+    if (sg) statObs.observe(sg);
+  })();
+
+  // ── HERO TYPEWRITER ──
+  (function() {
+    const el = document.querySelector('.hero p');
+    if (!el) return;
+    const text = el.textContent;
+    el.textContent = '';
+    const cursor = document.createElement('span');
+    cursor.className = 'cursor';
+    el.appendChild(cursor);
+    let i = 0;
+    function type() {
+      if (i < text.length) {
+        el.insertBefore(document.createTextNode(text[i++]), cursor);
+        setTimeout(type, 18 + Math.random() * 10);
+      } else {
+        setTimeout(() => cursor.remove(), 2000);
+      }
+    }
+    // Start after hero reveals
+    setTimeout(type, 800);
   })();
 
   // ── INIT ──
