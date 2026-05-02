@@ -1721,6 +1721,10 @@
 
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .nav-hamburger { display: flex; }
+  }
+  @media (max-width: 768px) {
     .series-section { grid-template-columns: 1fr; }
     .shop-preview { grid-template-columns: repeat(3, 1fr); }
   }
@@ -1743,6 +1747,23 @@
 </style>
 </head>
 <body>
+
+<!-- LOADER -->
+<div id="loader">
+  <img src="logo.png" alt="Nussy Motorsport" class="loader-logo">
+  <div class="loader-bar-wrap"><div class="loader-bar"></div></div>
+  <div class="loader-text">Initialising Systems</div>
+</div>
+
+<!-- SCROLL PROGRESS -->
+<div id="scroll-progress"></div>
+
+<!-- CURSOR -->
+<div id="cursor"></div>
+<div id="cursor-dot"></div>
+
+<!-- BACK TO TOP -->
+<a href="#" id="back-top" aria-label="Back to top">↑</a>
 
 <!-- RACING LINE -->
 <div class="racing-line"></div>
@@ -1811,8 +1832,19 @@
   </ul>
   <div class="nav-right">
     <span class="nav-live">Season Active</span>
+    <button class="nav-hamburger" id="hamburger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+<div class="nav-mobile" id="nav-mobile">
+  <a href="#section-news" onclick="closeMobileNav()">News</a>
+  <a href="#section-event" onclick="closeMobileNav()">Event</a>
+  <a href="#section-team" onclick="closeMobileNav()">Team</a>
+  <a href="#section-series" onclick="closeMobileNav()">League</a>
+  <a href="https://www.nussymotorsport.store/" target="_blank" onclick="closeMobileNav()">Shop</a>
+  <a href="https://discord.gg/3FcMCvKBUq" target="_blank" onclick="closeMobileNav()">⚡ Discord</a>
+</div>
 
 <!-- DAY COUNTER -->
 <div class="day-counter">
@@ -1938,6 +1970,13 @@
       <div class="sp-price">€24.99</div>
       <div class="sp-label">Team Cap</div>
     </a>
+  </div>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner reveal">
+    <h3>Think You're Fast Enough?</h3>
+    <p>We're always looking for the next talent to wear the Nussy colors. Join our Discord and prove yourself.</p>
+    <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn-dark">⚡ Join The Team</a>
   </div>
 
   <div class="section-divider"></div>
@@ -2163,7 +2202,7 @@
     }
     feed.innerHTML = news.map((item, i) => `
       <div class="news-card" style="animation-delay:${i * 0.05}s">
-        <span class="tag">${item.tag}</span>
+        <span class="tag" data-tag="${escHtml(item.tag)}">${escHtml(item.tag)}</span>
         <h3>${escHtml(item.title)}</h3>
         <p>${escHtml(item.body)}</p>
         <div class="meta">
@@ -2270,6 +2309,79 @@
   document.getElementById('login-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeLogin();
   });
+
+  // ── LOADER ──
+  window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1600);
+  });
+
+  // ── SCROLL PROGRESS ──
+  window.addEventListener('scroll', () => {
+    const el = document.getElementById('scroll-progress');
+    const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+    el.style.width = pct + '%';
+    // back to top
+    const bt = document.getElementById('back-top');
+    if (window.scrollY > 400) bt.classList.add('visible');
+    else bt.classList.remove('visible');
+  }, { passive: true });
+
+  // ── CUSTOM CURSOR ──
+  (function() {
+    const cur = document.getElementById('cursor');
+    const dot = document.getElementById('cursor-dot');
+    let mx = -100, my = -100;
+    document.addEventListener('mousemove', e => {
+      mx = e.clientX; my = e.clientY;
+      dot.style.left = mx + 'px';
+      dot.style.top  = my + 'px';
+      cur.style.left = mx + 'px';
+      cur.style.top  = my + 'px';
+    });
+    document.querySelectorAll('a, button, [onclick]').forEach(el => {
+      el.addEventListener('mouseenter', () => cur.classList.add('hovering'));
+      el.addEventListener('mouseleave', () => cur.classList.remove('hovering'));
+    });
+  })();
+
+  // ── HAMBURGER ──
+  window.closeMobileNav = function() {
+    document.getElementById('hamburger').classList.remove('open');
+    document.getElementById('nav-mobile').classList.remove('open');
+  }
+  document.getElementById('hamburger').addEventListener('click', function() {
+    this.classList.toggle('open');
+    document.getElementById('nav-mobile').classList.toggle('open');
+  });
+
+  // ── PARTICLES ──
+  (function() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    hero.style.position = 'relative';
+    const container = document.createElement('div');
+    container.id = 'particles';
+    hero.insertBefore(container, hero.firstChild);
+    function spawn() {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const duration = 3 + Math.random() * 4;
+      const drift = (Math.random() - 0.5) * 60;
+      p.style.cssText = `
+        left:${Math.random() * 100}%;
+        bottom:${Math.random() * 30}%;
+        --drift:${drift}px;
+        animation-duration:${duration}s;
+        animation-delay:${Math.random() * 3}s;
+        width:${1 + Math.random() * 2}px;
+        height:${1 + Math.random() * 2}px;
+      `;
+      container.appendChild(p);
+      setTimeout(() => p.remove(), (duration + 3) * 1000);
+    }
+    for (let i = 0; i < 20; i++) spawn();
+    setInterval(spawn, 400);
+  })();
 
 </script>
 </body>
