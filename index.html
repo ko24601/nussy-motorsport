@@ -1490,6 +1490,8 @@
   }
   .roster-role-badge.driver       { color: var(--neon); border-color: rgba(170,255,0,0.3); background: rgba(170,255,0,0.06); }
   .roster-role-badge.reserve      { color: #00cfff; border-color: rgba(0,207,255,0.3); background: rgba(0,207,255,0.06); }
+  .roster-role-badge.founder      { color: #fff; border-color: rgba(255,255,255,0.4); background: rgba(255,255,255,0.06); }
+  .roster-role-badge.developer    { color: #ff7c00; border-color: rgba(255,124,0,0.3); background: rgba(255,124,0,0.06); }
   .roster-role-badge.management   { color: #FFD700; border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.06); }
   .roster-role-badge.staff        { color: #cc44ff; border-color: rgba(204,68,255,0.3); background: rgba(204,68,255,0.06); }
   .roster-number {
@@ -2090,6 +2092,8 @@
         <select id="roster-role">
           <option value="driver">Race Driver</option>
           <option value="reserve">Reserve Driver</option>
+          <option value="founder">Founder / CEO</option>
+          <option value="developer">Developer</option>
           <option value="management">Management</option>
           <option value="staff">Staff</option>
         </select>
@@ -2572,6 +2576,8 @@
   const ROLE_LABELS = {
     driver:     'Race Driver',
     reserve:    'Reserve Driver',
+    founder:    'Founder / CEO',
+    developer:  'Developer',
     management: 'Management',
     staff:      'Staff'
   };
