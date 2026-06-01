@@ -152,6 +152,51 @@
     100% { background-position: -200% 0; }
   }
 
+  /* ── VIDEO BACKGROUND ── */
+  #video-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    background: #000;
+  }
+
+  #yt-wrap {
+    position: absolute;
+    top: 50%; left: 50%;
+    /* Force 16:9 to always cover viewport */
+    width: max(100vw, 177.78vh);
+    height: max(100vh, 56.25vw);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+  }
+
+  #yt-wrap iframe {
+    width: 100%; height: 100%;
+    border: none; pointer-events: none;
+  }
+
+  #video-overlay {
+    position: absolute; inset: 0;
+    background:
+      radial-gradient(ellipse at center, rgba(8,8,8,0.55) 0%, rgba(8,8,8,0.82) 100%);
+    /* Extra vignette */
+    box-shadow: inset 0 0 200px rgba(0,0,0,0.7);
+  }
+
+  /* Video label */
+  #video-label {
+    position: fixed;
+    bottom: 44px; left: 20px;
+    font-family: 'Orbitron', monospace;
+    font-size: 9px; letter-spacing: 3px;
+    color: rgba(170,255,0,0.3);
+    text-transform: uppercase;
+    z-index: 9994;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+
   /* ── CIRCUIT CANVAS ── */
   #circuit-canvas {
     position: fixed; inset: 0;
@@ -595,6 +640,13 @@
   <div id="konami-text">NUSSY MODE</div>
   <div id="konami-sub">cheat code activated — absolute legend</div>
 </div>
+
+<!-- VIDEO BACKGROUND -->
+<div id="video-bg">
+  <div id="yt-wrap"><div id="yt-player"></div></div>
+  <div id="video-overlay"></div>
+</div>
+<div id="video-label">◉ Live Footage</div>
 
 <!-- CANVASES -->
 <canvas id="circuit-canvas"></canvas>
@@ -1143,6 +1195,69 @@ function renderNews(){
   observeReveal(); initCardTilt();
 }
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+// ─── YOUTUBE BACKGROUND ───
+// Video IDs — swap these out for any YouTube footage you prefer
+const BG_VIDEOS = [
+  { id: 'vMg_9RkWF0U', label: 'ACC · GT3 Footage' },   // ACC gameplay
+  { id: 'NqDMn586MBE', label: 'F1 · Onboard Footage' }, // F1 footage
+  { id: '3rLiEhMnFa4', label: 'ACC · Race Highlights' }, // ACC highlights
+];
+let ytPlayer, currentVideo = 0;
+
+// Load YouTube IFrame API
+const ytScript = document.createElement('script');
+ytScript.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytScript);
+
+window.onYouTubeIframeAPIReady = function() {
+  ytPlayer = new YT.Player('yt-player', {
+    videoId: BG_VIDEOS[0].id,
+    playerVars: {
+      autoplay: 1,
+      mute: 1,
+      loop: 1,
+      controls: 0,
+      disablekb: 1,
+      enablejsapi: 1,
+      modestbranding: 1,
+      playsinline: 1,
+      rel: 0,
+      showinfo: 0,
+      iv_load_policy: 3,
+      playlist: BG_VIDEOS[0].id,
+    },
+    events: {
+      onReady: e => {
+        e.target.mute();
+        e.target.playVideo();
+        updateVideoLabel(0);
+      },
+      onStateChange: e => {
+        // When video ends, switch to next
+        if (e.data === YT.PlayerState.ENDED) nextVideo();
+      }
+    }
+  });
+};
+
+function nextVideo() {
+  currentVideo = (currentVideo + 1) % BG_VIDEOS.length;
+  const v = BG_VIDEOS[currentVideo];
+  const label = document.getElementById('video-label');
+  if (label) { label.style.opacity = '0'; setTimeout(() => { updateVideoLabel(currentVideo); label.style.opacity = '1'; }, 500); }
+  if (ytPlayer && ytPlayer.loadVideoById) {
+    ytPlayer.loadVideoById({ videoId: v.id, suggestedQuality: 'hd720' });
+  }
+}
+
+function updateVideoLabel(idx) {
+  const el = document.getElementById('video-label');
+  if (el) el.textContent = '◉ ' + BG_VIDEOS[idx].label;
+}
+
+// Rotate videos every 90 seconds regardless
+setInterval(nextVideo, 90000);
 
 // ─── NOTIFY ───
 function notify(msg){ const el=document.getElementById('notif'); el.textContent=msg; el.style.display='block'; clearTimeout(window._nt); window._nt=setTimeout(()=>{el.style.display='none';},3000); }
