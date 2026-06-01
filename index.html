@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Nussy Motorsport</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="logo.png">
 <style>
   :root {
     --neon: #AAFF00;
@@ -20,11 +21,7 @@
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* ── FULLSCREEN IFRAME OVERRIDE ── */
-  html, body {
-    width: 100%;
-    height: 100%;
-  }
+  html, body { width: 100%; height: 100%; }
 
   body {
     background: var(--black);
@@ -36,10 +33,7 @@
     position: relative;
   }
 
-  /* Tell the parent Google Sites iframe to be fullscreen */
-  html {
-    scroll-behavior: smooth;
-  }
+  html { scroll-behavior: smooth; }
 
   /* Scanline overlay */
   body::before {
@@ -57,12 +51,29 @@
     z-index: 9999;
   }
 
+  /* ── PARTICLE CANVAS ── */
+  #particle-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SPEED LINES CANVAS ── */
+  #speed-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+  }
+
   /* ── HEADER ── */
   header {
     position: relative;
     padding: 48px 40px 40px;
     border-bottom: 1px solid var(--border);
     overflow: hidden;
+    z-index: 10;
   }
 
   header::before {
@@ -96,19 +107,19 @@
     justify-content: center;
     flex-shrink: 0;
     background: none;
+    filter: drop-shadow(0 0 8px var(--neon-glow));
+    animation: logoPulse 3s ease-in-out infinite;
+  }
+
+  @keyframes logoPulse {
+    0%, 100% { filter: drop-shadow(0 0 8px rgba(170,255,0,0.35)); }
+    50% { filter: drop-shadow(0 0 20px rgba(170,255,0,0.7)) drop-shadow(0 0 40px rgba(170,255,0,0.3)); }
   }
 
   .logo-mark img {
     width: 100%;
     height: 100%;
     object-fit: contain;
-  }
-
-  .logo-mark span {
-    font-family: 'Orbitron', monospace;
-    font-size: 14px;
-    font-weight: 900;
-    color: var(--black);
   }
 
   .brand h1 {
@@ -119,6 +130,7 @@
     text-shadow: 0 0 20px var(--neon-glow), 0 0 40px rgba(170,255,0,0.15);
     letter-spacing: 2px;
     line-height: 1;
+    position: relative;
   }
 
   .brand p {
@@ -152,6 +164,8 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    position: relative;
+    overflow: hidden;
   }
 
   .btn-primary {
@@ -177,12 +191,28 @@
     box-shadow: 0 0 12px var(--neon-glow), inset 0 0 12px rgba(170,255,0,0.05);
   }
 
+  /* Click burst */
+  .btn-burst {
+    position: absolute;
+    border-radius: 50%;
+    transform: scale(0);
+    animation: burst 0.5s ease-out forwards;
+    pointer-events: none;
+    background: rgba(170,255,0,0.4);
+  }
+
+  @keyframes burst {
+    to { transform: scale(4); opacity: 0; }
+  }
+
   /* ── TICKER ── */
   .ticker {
     background: var(--neon);
     padding: 8px 0;
     overflow: hidden;
     white-space: nowrap;
+    position: relative;
+    z-index: 10;
   }
 
   .ticker-track {
@@ -199,9 +229,7 @@
     padding: 0 40px;
   }
 
-  .ticker-track span::before {
-    content: '◆ ';
-  }
+  .ticker-track span::before { content: '◆ '; }
 
   @keyframes ticker {
     from { transform: translateX(0); }
@@ -209,7 +237,7 @@
   }
 
   /* ── MAIN ── */
-  main { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; }
+  main { padding: 0 40px 60px; max-width: 1200px; margin: 0 auto; position: relative; z-index: 10; }
 
   /* ── SECTION LABELS ── */
   .section-label {
@@ -256,8 +284,10 @@
     padding: 24px;
     position: relative;
     overflow: hidden;
-    transition: border-color 0.2s, transform 0.2s;
+    transition: border-color 0.2s, transform 0.1s;
     animation: fadeIn 0.4s ease both;
+    transform-style: preserve-3d;
+    will-change: transform;
   }
 
   .news-card::before {
@@ -271,8 +301,21 @@
     transition: transform 0.3s;
   }
 
-  .news-card:hover { border-color: rgba(170,255,0,0.3); transform: translateY(-2px); }
+  .news-card:hover { border-color: rgba(170,255,0,0.3); }
   .news-card:hover::before { transform: scaleX(1); }
+
+  /* Card shine layer */
+  .news-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at var(--mx,50%) var(--my,50%), rgba(170,255,0,0.06) 0%, transparent 60%);
+    pointer-events: none;
+    transition: opacity 0.3s;
+    opacity: 0;
+  }
+
+  .news-card:hover::after { opacity: 1; }
 
   .news-card .tag {
     font-size: 10px;
@@ -296,11 +339,7 @@
     color: #fff;
   }
 
-  .news-card p {
-    font-size: 14px;
-    line-height: 1.6;
-    color: var(--muted);
-  }
+  .news-card p { font-size: 14px; line-height: 1.6; color: var(--muted); }
 
   .news-card .meta {
     margin-top: 16px;
@@ -309,18 +348,8 @@
     align-items: center;
   }
 
-  .news-card .date {
-    font-size: 11px;
-    letter-spacing: 2px;
-    color: #444;
-    text-transform: uppercase;
-  }
-
-  .news-card .author {
-    font-size: 11px;
-    color: var(--neon-dim);
-    letter-spacing: 1px;
-  }
+  .news-card .date { font-size: 11px; letter-spacing: 2px; color: #444; text-transform: uppercase; }
+  .news-card .author { font-size: 11px; color: var(--neon-dim); letter-spacing: 1px; }
 
   .news-empty {
     grid-column: 1/-1;
@@ -336,6 +365,40 @@
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(12px); }
     to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SCROLL REVEAL ── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .reveal-left {
+    opacity: 0;
+    transform: translateX(-40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal-left.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+
+  .reveal-right {
+    opacity: 0;
+    transform: translateX(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+
+  .reveal-right.visible {
+    opacity: 1;
+    transform: translateX(0);
   }
 
   /* ── ADMIN PANEL ── */
@@ -380,18 +443,9 @@
     text-transform: uppercase;
   }
 
-  .admin-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
+  .admin-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
 
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-
+  .form-group { display: flex; flex-direction: column; gap: 8px; }
   .form-group.full { grid-column: 1/-1; }
 
   .form-group label {
@@ -424,7 +478,6 @@
   }
 
   .form-group textarea { resize: vertical; min-height: 100px; }
-
   .form-group select option { background: var(--dark); }
 
   .admin-actions {
@@ -473,13 +526,7 @@
     margin-bottom: 8px;
   }
 
-  .login-box p {
-    font-size: 13px;
-    color: var(--muted);
-    margin-bottom: 28px;
-    letter-spacing: 1px;
-  }
-
+  .login-box p { font-size: 13px; color: var(--muted); margin-bottom: 28px; letter-spacing: 1px; }
   .login-box .form-group { margin-bottom: 16px; }
 
   .login-error {
@@ -528,11 +575,7 @@
     text-transform: uppercase;
   }
 
-  .about-block p {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #aaa;
-  }
+  .about-block p { font-size: 15px; line-height: 1.7; color: #aaa; }
 
   .stat-grid {
     display: grid;
@@ -546,7 +589,10 @@
     border: 1px solid var(--border);
     padding: 24px;
     text-align: center;
+    transition: border-color 0.3s;
   }
+
+  .stat-block:hover { border-color: rgba(170,255,0,0.3); }
 
   .stat-block .num {
     font-family: 'Orbitron', monospace;
@@ -616,12 +662,7 @@
     margin-bottom: 18px;
   }
 
-  .series-main p {
-    font-size: 15px;
-    line-height: 1.7;
-    color: #777;
-    margin-bottom: 14px;
-  }
+  .series-main p { font-size: 15px; line-height: 1.7; color: #777; margin-bottom: 14px; }
 
   .series-drivers {
     display: flex;
@@ -650,12 +691,7 @@
     margin-top: 4px;
   }
 
-  .series-cta a {
-    color: var(--neon);
-    text-decoration: none;
-    font-weight: 700;
-  }
-
+  .series-cta a { color: var(--neon); text-decoration: none; font-weight: 700; }
   .series-cta a:hover { text-decoration: underline; }
 
   .series-meta {
@@ -667,10 +703,7 @@
     gap: 24px;
   }
 
-  .series-stat {
-    border-left: 2px solid rgba(170,255,0,0.2);
-    padding-left: 16px;
-  }
+  .series-stat { border-left: 2px solid rgba(170,255,0,0.2); padding-left: 16px; }
 
   .series-stat .s-label {
     font-size: 10px;
@@ -701,6 +734,8 @@
     text-transform: uppercase;
     max-width: 1200px;
     margin: 0 auto;
+    position: relative;
+    z-index: 10;
   }
 
   footer a { color: var(--neon-dim); text-decoration: none; }
@@ -730,10 +765,11 @@
 
   /* ── HERO ── */
   .hero {
-    padding: 80px 40px 60px;
+    padding: 80px 40px 0;
     max-width: 1200px;
     margin: 0 auto;
     position: relative;
+    z-index: 10;
   }
 
   .hero::before {
@@ -752,6 +788,21 @@
     overflow: hidden;
   }
 
+  /* ── GRID FLOOR ── */
+  .grid-floor {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+
+  #grid-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
   /* ── DAY COUNTER ── */
   .day-counter {
     background: var(--black);
@@ -761,6 +812,8 @@
     align-items: center;
     justify-content: center;
     gap: 16px;
+    position: relative;
+    z-index: 10;
   }
 
   .day-counter .day-num {
@@ -780,11 +833,7 @@
     color: #fff;
   }
 
-  .day-counter .day-divider {
-    width: 1px;
-    height: 24px;
-    background: var(--border);
-  }
+  .day-counter .day-divider { width: 1px; height: 24px; background: var(--border); }
 
   .day-counter .day-sub {
     font-size: 11px;
@@ -793,7 +842,6 @@
     color: var(--muted);
   }
 
-  /* ── HERO ── */
   .hero-label {
     font-size: 11px;
     font-weight: 700;
@@ -828,14 +876,60 @@
     color: var(--neon);
     font-style: normal;
     text-shadow: 0 0 30px var(--neon-glow);
+    display: inline-block;
   }
 
-  .hero p {
-    font-size: 18px;
-    line-height: 1.7;
-    color: #888;
-    max-width: 680px;
+  /* Glitch effect */
+  .glitch {
+    position: relative;
+    display: inline-block;
   }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    text-shadow: none;
+  }
+
+  .glitch::before {
+    color: #ff00ff;
+    animation: glitch1 4s infinite;
+    clip-path: polygon(0 20%, 100% 20%, 100% 40%, 0 40%);
+    opacity: 0;
+  }
+
+  .glitch::after {
+    color: #00ffff;
+    animation: glitch2 4s infinite;
+    clip-path: polygon(0 60%, 100% 60%, 100% 80%, 0 80%);
+    opacity: 0;
+  }
+
+  @keyframes glitch1 {
+    0%, 90%, 100% { opacity: 0; transform: translate(0); }
+    91% { opacity: 0.8; transform: translate(-3px, 1px); }
+    93% { opacity: 0; transform: translate(3px, -1px); }
+    95% { opacity: 0.8; transform: translate(-2px, 0); }
+    97% { opacity: 0; }
+  }
+
+  @keyframes glitch2 {
+    0%, 90%, 100% { opacity: 0; transform: translate(0); }
+    92% { opacity: 0.8; transform: translate(3px, -1px); }
+    94% { opacity: 0; transform: translate(-3px, 1px); }
+    96% { opacity: 0.8; transform: translate(2px, 0); }
+    98% { opacity: 0; }
+  }
+
+  .hero p { font-size: 18px; line-height: 1.7; color: #888; max-width: 680px; }
 
   /* ── EVENT SECTION ── */
   .event-section {
@@ -890,9 +984,7 @@
     line-height: 1.2;
   }
 
-  .event-section h2 span {
-    color: var(--neon);
-  }
+  .event-section h2 span { color: var(--neon); }
 
   .event-section > p {
     font-size: 16px;
@@ -902,18 +994,9 @@
     margin-bottom: 28px;
   }
 
-  .event-perks {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    margin-bottom: 36px;
-  }
+  .event-perks { display: flex; flex-direction: column; gap: 14px; margin-bottom: 36px; }
 
-  .event-perk {
-    display: flex;
-    gap: 16px;
-    align-items: flex-start;
-  }
+  .event-perk { display: flex; gap: 16px; align-items: flex-start; }
 
   .event-perk .perk-icon {
     flex-shrink: 0;
@@ -938,22 +1021,16 @@
     margin-bottom: 4px;
   }
 
-  .event-perk .perk-text p {
-    font-size: 14px;
-    color: #777;
-    line-height: 1.5;
-  }
+  .event-perk .perk-text p { font-size: 14px; color: #777; line-height: 1.5; }
 
-  .event-actions {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-  }
+  .event-actions { display: flex; gap: 16px; flex-wrap: wrap; }
 
-  .btn-large {
-    font-size: 14px;
-    padding: 14px 28px;
-    letter-spacing: 3px;
+  .btn-large { font-size: 14px; padding: 14px 28px; letter-spacing: 3px; }
+
+  /* ── PARALLAX WRAPPER ── */
+  .parallax-hero {
+    position: relative;
+    z-index: 10;
   }
 
   /* ── RESPONSIVE ── */
@@ -965,10 +1042,17 @@
     .stat-grid { grid-template-columns: repeat(3, 1fr); }
     .header-actions .btn-ghost { display: none; }
     footer { flex-direction: column; gap: 8px; text-align: center; }
+    .series-section { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
+
+<!-- PARTICLE CANVAS -->
+<canvas id="particle-canvas"></canvas>
+
+<!-- SPEED LINES CANVAS -->
+<canvas id="speed-canvas"></canvas>
 
 <!-- LOGIN MODAL -->
 <div id="login-overlay">
@@ -991,9 +1075,9 @@
 <!-- HEADER -->
 <header>
   <div class="header-inner">
-    <div class="logo-mark"><img src="logo.png" alt="Nussy Motorsport" style="width:48px;height:48px;object-fit:contain;clip-path:none;background:none;"></div>
+    <div class="logo-mark"><img src="logo.png" alt="Nussy Motorsport" style="width:48px;height:48px;object-fit:contain;"></div>
     <div class="brand">
-      <h1>NUSSY MOTORSPORT</h1>
+      <h1 class="glitch" data-text="NUSSY MOTORSPORT">NUSSY MOTORSPORT</h1>
       <p>Sim Racing Esports · Est. 2026</p>
     </div>
     <div class="header-actions">
@@ -1029,15 +1113,22 @@
 </div>
 
 <!-- HERO -->
-<section class="hero">
-  <div class="hero-label">Nussy Motorsport</div>
-  <h2>From Sim to Asphalt: The <em>Evolution</em> of Nussy Motorsport.</h2>
-  <p>We are more than a sim-racing team. We are a community of high-performance athletes, driven by precision, professionalism, and the ultimate goal: the real-world karting track.</p>
-</section>
+<div class="parallax-hero">
+  <section class="hero" data-parallax="0.3">
+    <div class="hero-label reveal">Nussy Motorsport</div>
+    <h2 class="reveal" style="transition-delay:0.1s">From Sim to Asphalt: The <em>Evolution</em> of Nussy Motorsport.</h2>
+    <p class="reveal" style="transition-delay:0.2s">We are more than a sim-racing team. We are a community of high-performance athletes, driven by precision, professionalism, and the ultimate goal: the real-world karting track.</p>
+  </section>
+
+  <!-- GRID FLOOR -->
+  <div class="grid-floor">
+    <canvas id="grid-canvas"></canvas>
+  </div>
+</div>
 
 <!-- EVENT SECTION -->
-<div style="max-width:1200px;margin:0 auto;padding:0 40px 0;">
-  <div class="event-section">
+<div style="max-width:1200px;margin:0 auto;padding:0 40px 0;position:relative;z-index:10;">
+  <div class="event-section reveal">
     <div class="event-sponsor">Powered by Group S</div>
     <h2>Challenge the <span>Pro's</span> – Powered by Group S.</h2>
     <p>Are you fast enough to beat the best? On <strong style="color:#fff;">May 10th, 2026</strong>, Nussy Motorsport is hosting a massive "Community vs. Drivers" event in ACC.</p>
@@ -1101,7 +1192,7 @@
   </div>
 
   <!-- NEWS FEED -->
-  <div class="section-label">
+  <div class="section-label reveal">
     <h2>Latest News</h2>
   </div>
   <div id="news-feed">
@@ -1109,26 +1200,26 @@
   </div>
 
   <!-- ABOUT -->
-  <div class="section-label">
+  <div class="section-label reveal">
     <h2>About The Team</h2>
   </div>
   <div class="about-strip">
-    <div class="about-block">
+    <div class="about-block reveal-left">
       <h3>The Vision</h3>
       <p>Founded by Marcel Hartwich, Nussy Motorsport is a competitive powerhouse in the sim racing esports arena. Sim racing isn't just a simulation — it's the ultimate frontier of modern motorsport, where engineering meets intuition and virtual asphalt demands the same respect as any physical track.</p>
     </div>
-    <div class="about-block">
+    <div class="about-block reveal-right">
       <h3>The Philosophy</h3>
       <p>From the tight chicanes of Monza to the grueling endurance of the Nürburgring, every driver under the Nussy banner carries a singular vision: to push beyond the limit. Success is about discipline in every practice lap and the courage to find the gap where others see a wall.</p>
     </div>
   </div>
 
   <!-- CURRENT RACING SERIES -->
-  <div class="section-label">
+  <div class="section-label reveal">
     <h2>Current Racing Series</h2>
   </div>
   <div class="series-section">
-    <div class="series-main">
+    <div class="series-main reveal-left">
       <div class="series-badge">Quantum Racing League</div>
       <h2>Dominating the Quantum Racing League.</h2>
       <p>Our journey in the QRL continues. We are proud to announce our entry into the <strong style="color:#fff;">F125 T2</strong> tier with our drivers:</p>
@@ -1141,7 +1232,7 @@
         Think you have what it takes to wear the Nussy colors? <a href="https://discord.gg/3FcMCvKBUq" target="_blank">Contact our management today →</a>
       </div>
     </div>
-    <div class="series-meta">
+    <div class="series-meta reveal-right">
       <div class="series-stat">
         <div class="s-label">League</div>
         <div class="s-value">Quantum Racing</div>
@@ -1162,16 +1253,16 @@
   </div>
 
   <div class="stat-grid">
-    <div class="stat-block">
-      <div class="num">GT3</div>
+    <div class="stat-block reveal">
+      <div class="num counter" data-target="GT3" data-numeric="false">GT3</div>
       <div class="label">Class</div>
     </div>
-    <div class="stat-block">
-      <div class="num" id="stat-drivers">6+</div>
+    <div class="stat-block reveal" style="transition-delay:0.1s">
+      <div class="num counter" data-target="6" data-numeric="true" id="stat-drivers">0</div>
       <div class="label">Drivers</div>
     </div>
-    <div class="stat-block">
-      <div class="num">ACC</div>
+    <div class="stat-block reveal" style="transition-delay:0.2s">
+      <div class="num counter" data-target="ACC" data-numeric="false">ACC</div>
       <div class="label">Platform</div>
     </div>
   </div>
@@ -1185,7 +1276,7 @@
 
 <script>
   // ── CONFIG ──
-  const ADMIN_PASSWORD = 'nussy2024'; // Change this!
+  const ADMIN_PASSWORD = 'nussy2024';
   const STORAGE_KEY = 'nussy_news';
 
   // ── STATE ──
@@ -1230,16 +1321,12 @@
     const body = document.getElementById('news-body').value.trim();
     const tag = document.getElementById('news-tag').value;
     if (!title || !body) { notify('⚠ Title and content required'); return; }
-
     const item = {
       id: Date.now(),
-      title,
-      body,
-      tag,
+      title, body, tag,
       date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }),
       author: 'Admin'
     };
-
     news.unshift(item);
     saveNews();
     renderNews();
@@ -1254,9 +1341,7 @@
     notify('Post deleted');
   }
 
-  function saveNews() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(news));
-  }
+  function saveNews() { localStorage.setItem(STORAGE_KEY, JSON.stringify(news)); }
 
   function clearForm() {
     document.getElementById('news-title').value = '';
@@ -1270,7 +1355,7 @@
       return;
     }
     feed.innerHTML = news.map((item, i) => `
-      <div class="news-card" style="animation-delay:${i * 0.05}s">
+      <div class="news-card reveal" style="animation-delay:${i * 0.05}s">
         <span class="tag">${item.tag}</span>
         <h3>${escHtml(item.title)}</h3>
         <p>${escHtml(item.body)}</p>
@@ -1280,6 +1365,8 @@
         </div>
       </div>
     `).join('');
+    observeReveal();
+    initCardTilt();
   }
 
   function escHtml(s) {
@@ -1304,30 +1391,326 @@
     document.getElementById('day-count').textContent = 'DAY ' + day;
   })();
 
+  // ── PARTICLE FIELD ──
+  (function() {
+    const canvas = document.getElementById('particle-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, particles = [], mouse = { x: -9999, y: -9999 };
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function Particle() {
+      this.reset();
+    }
+
+    Particle.prototype.reset = function() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.vx = (Math.random() - 0.5) * 0.4;
+      this.vy = (Math.random() - 0.5) * 0.4;
+      this.r = Math.random() * 1.5 + 0.3;
+      this.alpha = Math.random() * 0.5 + 0.1;
+      this.baseAlpha = this.alpha;
+    };
+
+    function init() {
+      resize();
+      particles = [];
+      const count = Math.floor((W * H) / 10000);
+      for (let i = 0; i < count; i++) particles.push(new Particle());
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      particles.forEach(p => {
+        const dx = p.x - mouse.x;
+        const dy = p.y - mouse.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const repel = 120;
+        if (dist < repel) {
+          const force = (repel - dist) / repel;
+          p.vx += (dx / dist) * force * 0.8;
+          p.vy += (dy / dist) * force * 0.8;
+          p.alpha = Math.min(1, p.baseAlpha + force * 0.6);
+        } else {
+          p.alpha += (p.baseAlpha - p.alpha) * 0.05;
+        }
+
+        p.vx *= 0.97;
+        p.vy *= 0.97;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        if (p.x < 0) p.x = W;
+        if (p.x > W) p.x = 0;
+        if (p.y < 0) p.y = H;
+        if (p.y > H) p.y = 0;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(170,255,0,${p.alpha})`;
+        ctx.fill();
+      });
+
+      // Draw lines between close particles
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const dx = particles[i].x - particles[j].x;
+          const dy = particles[i].y - particles[j].y;
+          const d = Math.sqrt(dx*dx + dy*dy);
+          if (d < 100) {
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.strokeStyle = `rgba(170,255,0,${0.08 * (1 - d/100)})`;
+            ctx.lineWidth = 0.5;
+            ctx.stroke();
+          }
+        }
+      }
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('mousemove', e => { mouse.x = e.clientX; mouse.y = e.clientY; });
+    window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+    window.addEventListener('resize', init);
+    init();
+    draw();
+  })();
+
+  // ── SPEED LINES ──
+  (function() {
+    const canvas = document.getElementById('speed-canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, lines = [], timer = 0;
+
+    function resize() {
+      W = canvas.width = window.innerWidth;
+      H = canvas.height = window.innerHeight;
+    }
+
+    function spawnBurst() {
+      const count = 8 + Math.floor(Math.random() * 8);
+      for (let i = 0; i < count; i++) {
+        lines.push({
+          x: Math.random() * W,
+          y: 0,
+          len: 60 + Math.random() * 120,
+          speed: 12 + Math.random() * 18,
+          alpha: 0.4 + Math.random() * 0.4,
+          width: 0.5 + Math.random() * 1.5
+        });
+      }
+    }
+
+    function draw() {
+      ctx.clearRect(0, 0, W, H);
+      lines = lines.filter(l => l.y < H + l.len);
+      lines.forEach(l => {
+        l.y += l.speed;
+        l.alpha *= 0.97;
+        const grad = ctx.createLinearGradient(l.x, l.y - l.len, l.x, l.y);
+        grad.addColorStop(0, `rgba(170,255,0,0)`);
+        grad.addColorStop(1, `rgba(170,255,0,${l.alpha})`);
+        ctx.beginPath();
+        ctx.moveTo(l.x, l.y - l.len);
+        ctx.lineTo(l.x, l.y);
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = l.width;
+        ctx.stroke();
+      });
+
+      timer++;
+      if (timer % 180 === 0) spawnBurst();
+
+      requestAnimationFrame(draw);
+    }
+
+    window.addEventListener('resize', resize);
+    resize();
+    spawnBurst();
+    draw();
+  })();
+
+  // ── ANIMATED PERSPECTIVE GRID ──
+  (function() {
+    const canvas = document.getElementById('grid-canvas');
+    const ctx = canvas.getContext('2d');
+    let frame = 0;
+
+    function resize() {
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+    }
+
+    function draw() {
+      const W = canvas.width, H = canvas.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const horizon = H * 0.1;
+      const vp = { x: W / 2, y: horizon };
+      const cols = 16;
+      const rows = 14;
+      const speed = 0.4;
+      const offset = (frame * speed) % (H / rows);
+
+      ctx.strokeStyle = 'rgba(170,255,0,0.18)';
+      ctx.lineWidth = 0.7;
+
+      // Vertical lines (perspective)
+      for (let i = 0; i <= cols; i++) {
+        const t = i / cols;
+        const bx = W * t;
+        ctx.beginPath();
+        ctx.moveTo(vp.x + (bx - vp.x) * 0.01, horizon);
+        ctx.lineTo(bx, H);
+        ctx.stroke();
+      }
+
+      // Horizontal lines (scrolling)
+      for (let j = 0; j <= rows + 1; j++) {
+        const rawY = horizon + offset + (j / rows) * (H - horizon);
+        if (rawY > H) continue;
+        const t = (rawY - horizon) / (H - horizon);
+        const alpha = t * 0.35;
+        const lx = vp.x + (0 - vp.x) * (1 - t * 0.99);
+        const rx = vp.x + (W - vp.x) * (1 - t * 0.99);
+        ctx.beginPath();
+        ctx.moveTo(lx, rawY);
+        ctx.lineTo(rx, rawY);
+        ctx.strokeStyle = `rgba(170,255,0,${alpha})`;
+        ctx.stroke();
+      }
+
+      // Horizon glow
+      const grd = ctx.createLinearGradient(0, horizon - 4, 0, horizon + 20);
+      grd.addColorStop(0, 'rgba(170,255,0,0)');
+      grd.addColorStop(0.5, 'rgba(170,255,0,0.25)');
+      grd.addColorStop(1, 'rgba(170,255,0,0)');
+      ctx.fillStyle = grd;
+      ctx.fillRect(0, horizon - 4, W, 24);
+
+      frame++;
+      requestAnimationFrame(draw);
+    }
+
+    resize();
+    window.addEventListener('resize', () => { resize(); });
+    draw();
+  })();
+
+  // ── SCROLL REVEAL ──
+  function observeReveal() {
+    const els = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(el => obs.observe(el));
+  }
+
+  observeReveal();
+
+  // ── COUNTER ANIMATION ──
+  function animateCounters() {
+    document.querySelectorAll('.counter[data-numeric="true"]').forEach(el => {
+      const target = parseInt(el.dataset.target);
+      let current = 0;
+      const step = Math.ceil(target / 40);
+      const interval = setInterval(() => {
+        current = Math.min(current + step, target);
+        el.textContent = current + (el.dataset.suffix || '+');
+        if (current >= target) clearInterval(interval);
+      }, 40);
+    });
+  }
+
+  const statsObs = new IntersectionObserver(entries => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounters();
+        statsObs.disconnect();
+      }
+    });
+  }, { threshold: 0.5 });
+
+  const statGrid = document.querySelector('.stat-grid');
+  if (statGrid) statsObs.observe(statGrid);
+
+  // ── 3D CARD TILT ──
+  function initCardTilt() {
+    document.querySelectorAll('.news-card').forEach(card => {
+      card.addEventListener('mousemove', e => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rotX = ((y - cy) / cy) * -8;
+        const rotY = ((x - cx) / cx) * 8;
+        card.style.transform = `perspective(600px) rotateX(${rotX}deg) rotateY(${rotY}deg) translateZ(4px)`;
+        card.style.setProperty('--mx', `${(x / rect.width) * 100}%`);
+        card.style.setProperty('--my', `${(y / rect.height) * 100}%`);
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'perspective(600px) rotateX(0) rotateY(0) translateZ(0)';
+      });
+    });
+  }
+
+  initCardTilt();
+
+  // ── PARALLAX ──
+  window.addEventListener('scroll', () => {
+    const scrollY = window.scrollY;
+    const heroEl = document.querySelector('.hero');
+    if (heroEl) {
+      heroEl.style.transform = `translateY(${scrollY * 0.25}px)`;
+    }
+  });
+
+  // ── BUTTON BURST ──
+  document.querySelectorAll('.btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      const rect = btn.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const burst = document.createElement('span');
+      burst.className = 'btn-burst';
+      const size = Math.max(rect.width, rect.height);
+      burst.style.cssText = `width:${size}px;height:${size}px;left:${x - size/2}px;top:${y - size/2}px;`;
+      btn.appendChild(burst);
+      setTimeout(() => burst.remove(), 500);
+    });
+  });
+
   // ── INIT ──
   renderNews();
 
-  // Close overlay on backdrop click
   document.getElementById('login-overlay').addEventListener('click', function(e) {
     if (e.target === this) closeLogin();
   });
 
   // ── FULLSCREEN IFRAME HACK ──
-  // Attempt to resize the parent Google Sites iframe to cover the full page
   (function fullscreenEmbed() {
     try {
-      // Signal parent to resize iframe via postMessage
       function sendResize() {
         const height = document.body.scrollHeight;
         window.parent.postMessage({ type: 'setHeight', height: height }, '*');
-        // Also try direct style injection into parent
         try {
           const iframes = window.parent.document.querySelectorAll('iframe');
           iframes.forEach(function(f) {
             try {
               if (f.contentWindow === window) {
                 f.style.cssText = 'width:100%!important;height:100vh!important;min-height:100vh!important;border:none!important;display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:99999!important;';
-                // Also hide Google Sites chrome
                 const body = window.parent.document.body;
                 if (body) body.style.cssText = 'overflow:hidden!important;margin:0!important;padding:0!important;';
               }
@@ -1337,7 +1720,6 @@
       }
       sendResize();
       window.addEventListener('resize', sendResize);
-      // Retry a few times as page loads
       setTimeout(sendResize, 500);
       setTimeout(sendResize, 1500);
       setTimeout(sendResize, 3000);
