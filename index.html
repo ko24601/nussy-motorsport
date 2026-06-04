@@ -710,6 +710,62 @@
   .admin-section { display:none; }
   .admin-section.active { display:block; }
 
+  /* ── WHO WE SPONSOR MODAL ── */
+  #sponsored-overlay {
+    display:none; position:fixed; inset:0;
+    background:rgba(0,0,0,.88); backdrop-filter:blur(12px);
+    z-index:1000; align-items:center; justify-content:center;
+    padding:20px;
+  }
+  #sponsored-overlay.visible { display:flex; }
+
+  .sponsored-modal {
+    background:var(--dark); border:1px solid rgba(170,255,0,.2);
+    width:100%; max-width:760px; max-height:85vh;
+    display:flex; flex-direction:column;
+    position:relative; overflow:hidden;
+  }
+  .sponsored-modal::before {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,var(--gold),var(--amber),transparent);
+    box-shadow:0 0 16px var(--gold-glow);
+  }
+
+  .sponsored-header {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:28px 32px 20px; border-bottom:1px solid var(--border); flex-shrink:0;
+  }
+  .sponsored-header h3 {
+    font-family:'Orbitron',monospace; font-size:14px; font-weight:700;
+    letter-spacing:4px; color:var(--gold); text-transform:uppercase;
+  }
+  .sponsored-close {
+    background:none; border:none; color:var(--muted); font-size:22px;
+    cursor:none; transition:color .2s; line-height:1;
+  }
+  .sponsored-close:hover { color:var(--gold); }
+
+  .sponsored-body { padding:28px 32px; overflow-y:auto; flex:1; }
+
+  .sponsored-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:12px; }
+
+  .sponsored-card {
+    background:var(--card); border:1px solid var(--border);
+    padding:24px 20px; text-align:center;
+    position:relative; overflow:hidden;
+    transition:border-color .3s; text-decoration:none;
+    display:flex; flex-direction:column; align-items:center; gap:10px;
+  }
+  .sponsored-card:hover { border-color:rgba(170,255,0,.3); }
+  .sponsored-card .holo-shimmer { position:absolute; inset:0; background:linear-gradient(135deg,transparent,rgba(170,255,0,.04) 40%,rgba(0,229,255,.05) 60%,transparent); background-size:300% 300%; opacity:0; pointer-events:none; animation:holoShift 3s ease infinite paused; }
+  .sponsored-card:hover .holo-shimmer { opacity:1; animation-play-state:running; }
+  .sponsored-card img { width:64px; height:64px; object-fit:contain; border-radius:50%; border:1px solid rgba(170,255,0,.15); background:var(--dark); }
+  .sponsored-card .sp-no-img { width:64px; height:64px; border-radius:50%; border:1px solid rgba(170,255,0,.15); background:var(--dark); display:flex; align-items:center; justify-content:center; font-family:'Orbitron',monospace; font-size:20px; font-weight:900; color:rgba(170,255,0,.3); }
+  .sponsored-card .sp-name { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; color:#fff; }
+  .sponsored-card .sp-type { font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--amber); }
+  .sponsored-card .sp-desc { font-size:12px; color:var(--muted); line-height:1.5; }
+  .sponsored-empty { text-align:center; padding:48px; color:var(--muted); font-size:13px; letter-spacing:3px; text-transform:uppercase; border:1px dashed var(--border); }
+
   /* ── KONAMI ── */
   #konami-overlay { position:fixed; inset:0; z-index:999999; background:#000; display:none; align-items:center; justify-content:center; flex-direction:column; gap:20px; overflow:hidden; }
   #konami-overlay.active { display:flex; }
@@ -787,6 +843,21 @@
 <canvas id="speed-canvas"></canvas>
 <canvas id="smoke-canvas"></canvas>
 
+<!-- WHO WE SPONSOR MODAL -->
+<div id="sponsored-overlay">
+  <div class="sponsored-modal">
+    <div class="sponsored-header">
+      <h3>Who We Sponsor</h3>
+      <button class="sponsored-close" onclick="closeSponsored()">✕</button>
+    </div>
+    <div class="sponsored-body">
+      <div id="sponsored-grid" class="sponsored-grid">
+        <div class="sponsored-empty">No sponsored entities yet</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- MOBILE NAV -->
 <div id="mob-overlay" onclick="closeMobNav()"></div>
 <nav id="mob-nav">
@@ -825,6 +896,7 @@
     </div>
     <div class="header-actions">
       <div class="sys-online"><span class="hud-dot"></span>System Online</div>
+      <button class="btn btn-ghost" onclick="openSponsored()">Who We Sponsor</button>
       <a href="https://discord.gg/3FcMCvKBUq" target="_blank" class="btn btn-ghost">⚡ Discord</a>
       <button class="btn btn-primary" onclick="openLogin()">Admin</button>
     </div>
@@ -903,6 +975,7 @@
       <button class="admin-tab" onclick="switchTab('drivers',this)">Drivers</button>
       <button class="admin-tab" onclick="switchTab('staff',this)">Staff</button>
       <button class="admin-tab" onclick="switchTab('sponsors',this)">Sponsors</button>
+      <button class="admin-tab" onclick="switchTab('sponsored',this)">Who We Sponsor</button>
     </div>
 
     <!-- NEWS TAB -->
@@ -966,6 +1039,23 @@
         </div>
         <div class="form-group full"><label>Website URL (optional)</label><input type="text" id="spn-url" placeholder="e.g. https://groups.com"></div>
         <div class="admin-actions"><button class="btn btn-primary" onclick="addSponsor()">+ Add Sponsor</button></div>
+      </div>
+    </div>
+
+    <!-- WHO WE SPONSOR TAB -->
+    <div class="admin-section" id="tab-sponsored">
+      <div class="admin-grid">
+        <div class="form-group"><label>Name</label><input type="text" id="wws-name" placeholder="e.g. Team Velocity"></div>
+        <div class="form-group"><label>Type</label><input type="text" id="wws-type" placeholder="e.g. Sim Racing Team"></div>
+        <div class="form-group full"><label>Description</label><input type="text" id="wws-desc" placeholder="e.g. Backed in their QRL campaign"></div>
+        <div class="form-group full"><label>Website URL (optional)</label><input type="text" id="wws-url" placeholder="e.g. https://..."></div>
+        <div class="form-group full img-upload-wrap">
+          <label>Logo / Photo</label>
+          <label class="img-upload-label" for="wws-photo"><span class="upload-icon">📷</span> Choose image…</label>
+          <input type="file" id="wws-photo" accept="image/*" onchange="previewImg(this,'wws-preview')">
+          <img id="wws-preview" class="img-preview">
+        </div>
+        <div class="admin-actions"><button class="btn btn-primary" onclick="addSponsored()">+ Add</button></div>
       </div>
     </div>
   </div>
@@ -1555,6 +1645,57 @@ function renderSponsors() {
 
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// ─── WHO WE SPONSOR ───
+let sponsored = [];
+
+db.collection('sponsored').onSnapshot(snap => {
+  sponsored = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderSponsored();
+}, e => console.error('sponsored:', e));
+
+function openSponsored() { document.getElementById('sponsored-overlay').classList.add('visible'); }
+function closeSponsored() { document.getElementById('sponsored-overlay').classList.remove('visible'); }
+
+async function addSponsored() {
+  const name = document.getElementById('wws-name').value.trim();
+  const type = document.getElementById('wws-type').value.trim();
+  const desc = document.getElementById('wws-desc').value.trim();
+  const url  = document.getElementById('wws-url').value.trim();
+  const file = document.getElementById('wws-photo').files[0];
+  if (!name) { notify('⚠ Name required'); return; }
+  notify('Uploading...');
+  const photoUrl = file ? await uploadPhoto(file, `sponsored/${Date.now()}_${file.name}`) : '';
+  db.collection('sponsored').add({ name, type, desc, url, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => {
+      ['wws-name','wws-type','wws-desc','wws-url'].forEach(id => document.getElementById(id).value='');
+      document.getElementById('wws-photo').value='';
+      document.getElementById('wws-preview').style.display='none';
+      notify('✓ Added');
+    }).catch(e => notify('⚠ ' + e.message));
+}
+
+function deleteSponsored(id) {
+  db.collection('sponsored').doc(id).delete().then(() => notify('Removed')).catch(e => notify('⚠ ' + e.message));
+}
+
+function renderSponsored() {
+  const grid = document.getElementById('sponsored-grid');
+  if (!grid) return;
+  if (sponsored.length === 0) { grid.innerHTML = '<div class="sponsored-empty">No sponsored entities yet</div>'; return; }
+  grid.innerHTML = sponsored.map(s => {
+    const tag   = s.url ? `<a href="${escHtml(s.url)}" target="_blank" class="sponsored-card visor">` : `<div class="sponsored-card visor">`;
+    const close = s.url ? `</a>` : `</div>`;
+    return `${tag}
+      <div class="holo-shimmer"></div>
+      ${s.photoUrl ? `<img src="${escHtml(s.photoUrl)}" alt="${escHtml(s.name)}">` : `<div class="sp-no-img">${escHtml(s.name[0] || '?')}</div>`}
+      <div class="sp-type">${escHtml(s.type || '')}</div>
+      <div class="sp-name">${escHtml(s.name)}</div>
+      ${s.desc ? `<div class="sp-desc">${escHtml(s.desc)}</div>` : ''}
+      ${isAdmin ? `<div style="color:#ff5555;cursor:pointer;font-size:10px;margin-top:4px;" onclick="event.preventDefault();deleteSponsored('${s.id}')">✕ Remove</div>` : ''}
+    ${close}`;
+  }).join('');
+}
+
 // ─── NOTIFY ───
 function notify(msg){ const el=document.getElementById('notif');el.textContent=msg;el.style.display='block';clearTimeout(window._nt);window._nt=setTimeout(()=>{el.style.display='none';},3000); }
 
@@ -1564,6 +1705,7 @@ function notify(msg){ const el=document.getElementById('notif');el.textContent=m
 // ─── INIT ───
 // Data rendering is handled by Firestore onSnapshot listeners above
 document.getElementById('login-overlay').addEventListener('click',function(e){if(e.target===this)closeLogin();});
+document.getElementById('sponsored-overlay').addEventListener('click',function(e){if(e.target===this)closeSponsored();});
 (function(){ try{ function sr(){ window.parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); try{window.parent.document.querySelectorAll('iframe').forEach(f=>{try{if(f.contentWindow===window){f.style.cssText='width:100%!important;height:100vh!important;border:none!important;display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:99999!important;';}}catch(e){}});}catch(e){}} sr();window.addEventListener('resize',sr);[500,1500,3000].forEach(t=>setTimeout(sr,t)); }catch(e){} })();
 </script>
 </body>
