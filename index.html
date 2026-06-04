@@ -962,28 +962,42 @@ const db      = firebase.firestore();
 const storage = firebase.storage();
 
 // Real-time listeners — load data live for everyone
-db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
-  news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderNews();
-}, () => {
-  // fallback if no createdAt index
-  db.collection('news').onSnapshot(snap => {
+function startListeners() {
+  db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
     news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderNews();
+  }, () => {
+    db.collection('news').onSnapshot(snap => {
+      news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      renderNews();
+    }, e => console.error('news:', e));
   });
-});
-db.collection('drivers').onSnapshot(snap => {
-  drivers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderDrivers();
-});
-db.collection('staff').onSnapshot(snap => {
-  staff = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderStaff();
-});
-db.collection('sponsors').onSnapshot(snap => {
-  sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-  renderSponsors();
-});
+
+  db.collection('drivers').onSnapshot(snap => {
+    drivers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderDrivers();
+  }, e => {
+    console.error('drivers:', e.code, e.message);
+    document.getElementById('drivers-grid').innerHTML =
+      `<div class="driver-empty">⚠ ${e.code === 'permission-denied' ? 'Firestore rules blocking reads — set rules to allow read: if true' : e.message}</div>`;
+  });
+
+  db.collection('staff').onSnapshot(snap => {
+    staff = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderStaff();
+  }, e => {
+    console.error('staff:', e.code, e.message);
+    document.getElementById('staff-grid').innerHTML =
+      `<div class="driver-empty">⚠ ${e.code === 'permission-denied' ? 'Firestore rules blocking reads — set rules to allow read: if true' : e.message}</div>`;
+  });
+
+  db.collection('sponsors').onSnapshot(snap => {
+    sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderSponsors();
+  }, e => console.error('sponsors:', e));
+}
+
+startListeners();
 
 // Restore session if still signed in
 firebase.auth().onAuthStateChanged(user => {
