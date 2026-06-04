@@ -974,34 +974,20 @@ function startListeners() {
     });
   });
 
-  // Drivers — reads from both 'roster' (existing) and 'drivers' (new)
-  let rosterDocs = [], driverDocs = [];
+  // Roster — single collection for drivers + staff, split by type field
   db.collection('roster').onSnapshot(snap => {
-    rosterDocs = snap.docs.map(d => ({ id: 'roster_' + d.id, _col: 'roster', ...d.data() }));
-    drivers = [...rosterDocs.filter(d => !d.type || d.type === 'driver' || d.type === 'Driver'), ...driverDocs];
+    const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    drivers = all.filter(d => !d.type || d.type.toLowerCase() === 'driver');
+    staff   = all.filter(d => d.type && d.type.toLowerCase() === 'staff');
     renderDrivers();
-    // Staff from roster with type staff
-    staff = [...rosterDocs.filter(d => d.type === 'staff' || d.type === 'Staff'), ...staffDocs];
     renderStaff();
-  }, () => {});
+  }, e => console.error('roster:', e));
 
-  let staffDocs = [];
-  db.collection('staff').onSnapshot(snap => {
-    staffDocs = snap.docs.map(d => ({ id: d.id, _col: 'staff', ...d.data() }));
-    staff = [...rosterDocs.filter(d => d.type === 'staff' || d.type === 'Staff'), ...staffDocs];
-    renderStaff();
-  }, () => {});
-
-  db.collection('drivers').onSnapshot(snap => {
-    driverDocs = snap.docs.map(d => ({ id: d.id, _col: 'drivers', ...d.data() }));
-    drivers = [...rosterDocs.filter(d => !d.type || d.type === 'driver' || d.type === 'Driver'), ...driverDocs];
-    renderDrivers();
-  }, () => {});
-
+  // Sponsors
   db.collection('sponsors').onSnapshot(snap => {
     sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderSponsors();
-  }, () => {});
+  }, e => console.error('sponsors:', e));
 }
 
 startListeners();
@@ -1365,8 +1351,8 @@ async function addDriver() {
   const file   = document.getElementById('drv-photo').files[0];
   if (!name) { notify('⚠ Driver name required'); return; }
   notify('Uploading...');
-  const photoURL = file ? await uploadPhoto(file, `drivers/${Date.now()}_${file.name}`) : null;
-  db.collection('drivers').add({ name, num, role, status, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+  const photoURL = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : null;
+  db.collection('roster').add({ type:'driver', name, num, role, status, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
     .then(() => {
       document.getElementById('drv-name').value='';
       document.getElementById('drv-num').value='';
@@ -1377,9 +1363,7 @@ async function addDriver() {
     }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteDriver(id) {
-  const col = id.startsWith('roster_') ? 'roster' : 'drivers';
-  const docId = id.startsWith('roster_') ? id.replace('roster_','') : id;
-  db.collection(col).doc(docId).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
+  db.collection('roster').doc(id).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
 }
 function renderDrivers() {
   const grid = document.getElementById('drivers-grid');
@@ -1407,8 +1391,8 @@ async function addStaff() {
   const file  = document.getElementById('stf-photo').files[0];
   if (!name) { notify('⚠ Name required'); return; }
   notify('Uploading...');
-  const photoURL = file ? await uploadPhoto(file, `staff/${Date.now()}_${file.name}`) : null;
-  db.collection('staff').add({ name, title, dept, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+  const photoURL = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : null;
+  db.collection('roster').add({ type:'staff', name, title, dept, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
     .then(() => {
       document.getElementById('stf-name').value='';
       document.getElementById('stf-title').value='';
@@ -1419,9 +1403,7 @@ async function addStaff() {
     }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteStaff(id) {
-  const col = id.startsWith('roster_') ? 'roster' : 'staff';
-  const docId = id.startsWith('roster_') ? id.replace('roster_','') : id;
-  db.collection(col).doc(docId).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
+  db.collection('roster').doc(id).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
 }
 function renderStaff() {
   const grid = document.getElementById('staff-grid');
