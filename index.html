@@ -1178,10 +1178,8 @@ initCardTilt();
 // ─── PARALLAX HERO ───
 window.addEventListener('scroll',()=>{ const bg=document.querySelector('.hero-bg-img'); if(bg) bg.style.transform=`scale(1.04) translateY(${window.scrollY*.12}px)`; });
 
-// ─── BUTTON BURST + TURBO SOUND ───
-let audioCtx;
-function playTurbo(){ try{ if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)(); const osc=audioCtx.createOscillator(),gain=audioCtx.createGain(),dist=audioCtx.createWaveShaper(); const curve=new Float32Array(256); for(let i=0;i<256;i++){const x=(i*2)/256-1;curve[i]=(Math.PI+200)*x/(Math.PI+200*Math.abs(x));} dist.curve=curve; osc.connect(dist);dist.connect(gain);gain.connect(audioCtx.destination); osc.type='sawtooth'; osc.frequency.setValueAtTime(60,audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(520,audioCtx.currentTime+.12); osc.frequency.exponentialRampToValueAtTime(180,audioCtx.currentTime+.35); gain.gain.setValueAtTime(.12,audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.45); osc.start();osc.stop(audioCtx.currentTime+.45); }catch(e){} }
-document.querySelectorAll('.btn').forEach(btn=>{ btn.addEventListener('click',e=>{ playTurbo(); const r=btn.getBoundingClientRect(),size=Math.max(r.width,r.height); const b=document.createElement('span');b.className='btn-burst';b.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-r.left-size/2}px;top:${e.clientY-r.top-size/2}px;`; btn.appendChild(b);setTimeout(()=>b.remove(),500); }); });
+// ─── BUTTON BURST ───
+document.querySelectorAll('.btn').forEach(btn=>{ btn.addEventListener('click',e=>{ const r=btn.getBoundingClientRect(),size=Math.max(r.width,r.height); const b=document.createElement('span');b.className='btn-burst';b.style.cssText=`width:${size}px;height:${size}px;left:${e.clientX-r.left-size/2}px;top:${e.clientY-r.top-size/2}px;`; btn.appendChild(b);setTimeout(()=>b.remove(),500); }); });
 
 // ─── KONAMI CODE ───
 (function(){
@@ -1193,7 +1191,7 @@ document.querySelectorAll('.btn').forEach(btn=>{ btn.addEventListener('click',e=
     let particles=[],spawnT=0;
     function spawnFW(){ const x=Math.random()*kc.width,y=Math.random()*kc.height*.7; for(let i=0;i<60;i++){const a=(Math.PI*2*i)/60,sp=2+Math.random()*5;particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,alpha:1,r:Math.random()*3+1,decay:.015+Math.random()*.01});} }
     function anim(){ if(!overlay.classList.contains('active'))return; ctx.fillStyle='rgba(0,0,0,0.15)';ctx.fillRect(0,0,kc.width,kc.height); spawnT++;if(spawnT%20===0)spawnFW(); particles=particles.filter(p=>p.alpha>.01); particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.05;p.alpha-=p.decay;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(170,255,0,${p.alpha})`;ctx.fill();}); requestAnimationFrame(anim); }
-    anim(); for(let i=0;i<3;i++)setTimeout(playTurbo,i*200);
+    anim();
     setTimeout(()=>{overlay.classList.remove('active');ctx.clearRect(0,0,kc.width,kc.height);},4000);
   }
 })();
