@@ -565,23 +565,24 @@
     box-shadow:0 12px 40px rgba(0,0,0,.5), 0 0 20px rgba(170,255,0,.06);
   }
 
-  /* Photo area */
+  /* Photo area — square, full image visible */
   .driver-photo-wrap {
-    position:relative; width:100%; height:220px; overflow:hidden;
+    position:relative; width:100%; aspect-ratio:1/1; overflow:hidden;
     background:var(--dark);
   }
   .driver-photo-wrap img {
-    width:100%; height:100%; object-fit:cover; object-position:top center;
-    display:block; transition:transform .4s ease, filter .4s ease;
+    width:100%; height:100%; object-fit:contain; object-position:center;
+    display:block; transition:filter .4s ease;
     filter:grayscale(10%) contrast(1.05);
+    background:var(--dark);
   }
-  .driver-card:hover .driver-photo-wrap img { transform:scale(1.04); filter:grayscale(0%) contrast(1.1); }
+  .driver-card:hover .driver-photo-wrap img { filter:grayscale(0%) contrast(1.08); }
 
   /* No photo placeholder */
   .driver-photo-wrap.no-photo {
     display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,var(--dark),var(--card));
-    height:160px;
+    aspect-ratio:1/1;
   }
   .driver-photo-wrap.no-photo::after {
     content:''; width:60px; height:60px; border-radius:50%;
@@ -663,18 +664,19 @@
   }
   .staff-card:hover::after { transform:scaleX(1); }
 
-  /* Staff photo */
+  /* Staff photo — square, full image visible */
   .staff-photo-wrap {
-    position:relative; width:100%; height:180px; overflow:hidden; background:var(--dark);
+    position:relative; width:100%; aspect-ratio:1/1; overflow:hidden; background:var(--dark);
   }
   .staff-photo-wrap img {
-    width:100%; height:100%; object-fit:cover; object-position:top center;
-    display:block; transition:transform .4s ease, filter .4s;
+    width:100%; height:100%; object-fit:contain; object-position:center;
+    display:block; transition:filter .4s;
     filter:grayscale(15%) contrast(1.05);
+    background:var(--dark);
   }
-  .staff-card:hover .staff-photo-wrap img { transform:scale(1.04); filter:grayscale(0%); }
+  .staff-card:hover .staff-photo-wrap img { filter:grayscale(0%); }
   .staff-photo-wrap.no-photo {
-    height:80px; display:flex; align-items:center; justify-content:center;
+    aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
     background:linear-gradient(135deg,var(--dark),var(--card));
   }
 
