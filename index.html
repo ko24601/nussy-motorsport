@@ -572,6 +572,7 @@
 
   .driver-role { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); margin-bottom:10px; }
   .driver-name { font-family:'Orbitron',monospace; font-size:clamp(16px,2vw,22px); font-weight:900; color:#fff; margin-bottom:14px; line-height:1.1; }
+  .driver-bio { font-size:13px; line-height:1.6; color:var(--muted); margin:10px 0; }
   .driver-status { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
   .driver-status .dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold-glow); animation:blink 2s step-start infinite; }
   .driver-status.reserve .dot { background:var(--muted); box-shadow:none; animation:none; }
@@ -846,12 +847,15 @@
     <!-- DRIVERS TAB -->
     <div class="admin-section" id="tab-drivers">
       <div class="admin-grid">
-        <div class="form-group"><label>Driver Name</label><input type="text" id="drv-name" placeholder="e.g. Marcel Hartwich"></div>
-        <div class="form-group"><label>Car Number</label><input type="text" id="drv-num" placeholder="e.g. 28"></div>
-        <div class="form-group"><label>Role</label><input type="text" id="drv-role" placeholder="e.g. GT3 Driver"></div>
+        <div class="form-group"><label>Driver Name</label><input type="text" id="drv-name" placeholder="e.g. Jayden E"></div>
+        <div class="form-group"><label>Number</label><input type="text" id="drv-number" placeholder="e.g. 28"></div>
+        <div class="form-group"><label>Role</label><input type="text" id="drv-role" placeholder="e.g. driver"></div>
+        <div class="form-group"><label>Nation</label><input type="text" id="drv-nation" placeholder="e.g. 🇬🇧 UK"></div>
+        <div class="form-group"><label>Social</label><input type="text" id="drv-social" placeholder="e.g. @gtr24601"></div>
         <div class="form-group"><label>Status</label>
           <select id="drv-status"><option value="active">Active</option><option value="reserve">Reserve</option></select>
         </div>
+        <div class="form-group full"><label>Bio</label><input type="text" id="drv-bio" placeholder="e.g. F1 driver"></div>
         <div class="form-group full img-upload-wrap">
           <label>Photo</label>
           <label class="img-upload-label" for="drv-photo"><span class="upload-icon">📷</span> Choose photo…</label>
@@ -866,8 +870,10 @@
     <div class="admin-section" id="tab-staff">
       <div class="admin-grid">
         <div class="form-group"><label>Name</label><input type="text" id="stf-name" placeholder="e.g. Marcel Hartwich"></div>
-        <div class="form-group"><label>Title</label><input type="text" id="stf-title" placeholder="e.g. Team Principal"></div>
-        <div class="form-group"><label>Department</label><input type="text" id="stf-dept" placeholder="e.g. Management"></div>
+        <div class="form-group"><label>Role</label><input type="text" id="stf-title" placeholder="e.g. founder, management"></div>
+        <div class="form-group"><label>Nation</label><input type="text" id="stf-nation" placeholder="e.g. 🇩🇪 GER"></div>
+        <div class="form-group"><label>Social</label><input type="text" id="stf-social" placeholder="e.g. @nussy"></div>
+        <div class="form-group full"><label>Bio</label><input type="text" id="stf-bio" placeholder="e.g. Coo of nussy co"></div>
         <div class="form-group full img-upload-wrap">
           <label>Photo</label>
           <label class="img-upload-label" for="stf-photo"><span class="upload-icon">📷</span> Choose photo…</label>
@@ -974,11 +980,11 @@ function startListeners() {
     });
   });
 
-  // Roster — single collection for drivers + staff, split by type field
+  // Roster — split by role field: "driver" = drivers, everything else = staff
   db.collection('roster').onSnapshot(snap => {
     const all = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    drivers = all.filter(d => !d.type || d.type.toLowerCase() === 'driver');
-    staff   = all.filter(d => d.type && d.type.toLowerCase() === 'staff');
+    drivers = all.filter(d => d.role && d.role.toLowerCase().includes('driver'));
+    staff   = all.filter(d => !d.role || !d.role.toLowerCase().includes('driver'));
     renderDrivers();
     renderStaff();
   }, e => console.error('roster:', e));
@@ -1345,18 +1351,19 @@ async function uploadPhoto(file, path) {
 // ─── DRIVERS ───
 async function addDriver() {
   const name   = document.getElementById('drv-name').value.trim();
-  const num    = document.getElementById('drv-num').value.trim();
-  const role   = document.getElementById('drv-role').value.trim();
+  const number = document.getElementById('drv-number').value.trim();
+  const role   = document.getElementById('drv-role').value.trim() || 'driver';
+  const nation = document.getElementById('drv-nation').value.trim();
+  const social = document.getElementById('drv-social').value.trim();
+  const bio    = document.getElementById('drv-bio').value.trim();
   const status = document.getElementById('drv-status').value;
   const file   = document.getElementById('drv-photo').files[0];
   if (!name) { notify('⚠ Driver name required'); return; }
   notify('Uploading...');
-  const photoURL = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : null;
-  db.collection('roster').add({ type:'driver', name, num, role, status, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+  const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
+  db.collection('roster').add({ name, number, role, nation, social, bio, status, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
     .then(() => {
-      document.getElementById('drv-name').value='';
-      document.getElementById('drv-num').value='';
-      document.getElementById('drv-role').value='';
+      ['drv-name','drv-number','drv-role','drv-nation','drv-social','drv-bio'].forEach(id => document.getElementById(id).value='');
       document.getElementById('drv-photo').value='';
       document.getElementById('drv-preview').style.display='none';
       notify('✓ Driver added');
@@ -1369,34 +1376,39 @@ function renderDrivers() {
   const grid = document.getElementById('drivers-grid');
   if (!grid) return;
   if (drivers.length === 0) { grid.innerHTML = '<div class="driver-empty">No drivers yet</div>'; return; }
-  grid.innerHTML = drivers.map(d => `
-    <div class="driver-card visor reveal ${d.photoURL ? 'has-photo' : ''}">
-      ${d.photoURL ? `<img class="driver-photo" src="${escHtml(d.photoURL)}" alt="${escHtml(d.name)}">` : ''}
-      <div class="driver-num">${escHtml(d.num || '—')}</div>
-      <div class="driver-role">${escHtml(d.role || 'Driver')}</div>
+  grid.innerHTML = drivers.map(d => {
+    const photo = d.photoUrl || d.photoURL || '';
+    return `
+    <div class="driver-card visor reveal ${photo ? 'has-photo' : ''}">
+      ${photo ? `<img class="driver-photo" src="${escHtml(photo)}" alt="${escHtml(d.name)}">` : ''}
+      <div class="driver-num">${escHtml(d.number || '—')}</div>
+      <div class="driver-role">${escHtml(d.role || 'Driver')}${d.nation ? ` &nbsp;·&nbsp; ${escHtml(d.nation)}` : ''}</div>
       <div class="driver-name">${escHtml(d.name)}</div>
+      ${d.bio ? `<div class="driver-bio">${escHtml(d.bio)}</div>` : ''}
       <div class="driver-status ${d.status === 'reserve' ? 'reserve' : ''}">
         <span class="dot"></span>${d.status === 'reserve' ? 'Reserve' : 'Active'}
+        ${d.social ? `<span style="color:var(--muted);font-size:10px;margin-left:10px;">${escHtml(d.social)}</span>` : ''}
         ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:12px;font-size:10px;" onclick="deleteDriver('${d.id}')">✕</span>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   observeReveal();
 }
 
 // ─── STAFF ───
 async function addStaff() {
-  const name  = document.getElementById('stf-name').value.trim();
-  const title = document.getElementById('stf-title').value.trim();
-  const dept  = document.getElementById('stf-dept').value.trim();
-  const file  = document.getElementById('stf-photo').files[0];
+  const name   = document.getElementById('stf-name').value.trim();
+  const role   = document.getElementById('stf-title').value.trim() || 'management';
+  const nation = document.getElementById('stf-nation').value.trim();
+  const social = document.getElementById('stf-social').value.trim();
+  const bio    = document.getElementById('stf-bio').value.trim();
+  const file   = document.getElementById('stf-photo').files[0];
   if (!name) { notify('⚠ Name required'); return; }
   notify('Uploading...');
-  const photoURL = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : null;
-  db.collection('roster').add({ type:'staff', name, title, dept, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+  const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
+  db.collection('roster').add({ name, role, nation, social, bio, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
     .then(() => {
-      document.getElementById('stf-name').value='';
-      document.getElementById('stf-title').value='';
-      document.getElementById('stf-dept').value='';
+      ['stf-name','stf-title','stf-nation','stf-social','stf-bio'].forEach(id => document.getElementById(id).value='');
       document.getElementById('stf-photo').value='';
       document.getElementById('stf-preview').style.display='none';
       notify('✓ Staff member added');
@@ -1409,15 +1421,18 @@ function renderStaff() {
   const grid = document.getElementById('staff-grid');
   if (!grid) return;
   if (staff.length === 0) { grid.innerHTML = '<div class="driver-empty">No staff yet</div>'; return; }
-  grid.innerHTML = staff.map(s => `
-    <div class="staff-card reveal ${s.photoURL ? 'has-photo' : ''}">
-      ${s.photoURL ? `<img class="staff-photo" src="${escHtml(s.photoURL)}" alt="${escHtml(s.name)}">` : ''}
-      <div class="staff-dept">${escHtml(s.dept || 'Team')}</div>
+  grid.innerHTML = staff.map(s => {
+    const photo = s.photoUrl || s.photoURL || '';
+    return `
+    <div class="staff-card reveal ${photo ? 'has-photo' : ''}">
+      ${photo ? `<img class="staff-photo" src="${escHtml(photo)}" alt="${escHtml(s.name)}">` : ''}
+      <div class="staff-dept">${escHtml(s.role || s.dept || 'Team')}${s.nation ? ` &nbsp;·&nbsp; ${escHtml(s.nation)}` : ''}</div>
       <div class="staff-name">${escHtml(s.name)}</div>
-      <div class="staff-title">${escHtml(s.title || '')}
-        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:10px;font-size:10px;" onclick="deleteStaff('${s.id}')">✕</span>` : ''}
-      </div>
-    </div>`).join('');
+      ${s.bio ? `<div class="staff-title" style="color:var(--muted);font-size:13px;margin-top:4px;">${escHtml(s.bio)}</div>` : ''}
+      ${s.social ? `<div style="font-size:11px;color:var(--gold-dim);margin-top:6px;letter-spacing:1px;">${escHtml(s.social)}</div>` : ''}
+      ${isAdmin ? `<div style="margin-top:10px;"><span style="color:#ff5555;cursor:pointer;font-size:10px;" onclick="deleteStaff('${s.id}')">✕ Remove</span></div>` : ''}
+    </div>`;
+  }).join('');
   observeReveal();
 }
 
