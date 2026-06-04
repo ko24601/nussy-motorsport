@@ -933,16 +933,22 @@ const db = firebase.firestore();
 db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
   news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderNews();
+}, () => {
+  // fallback if no createdAt index
+  db.collection('news').onSnapshot(snap => {
+    news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderNews();
+  });
 });
-db.collection('drivers').orderBy('createdAt','asc').onSnapshot(snap => {
+db.collection('drivers').onSnapshot(snap => {
   drivers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderDrivers();
 });
-db.collection('staff').orderBy('createdAt','asc').onSnapshot(snap => {
+db.collection('staff').onSnapshot(snap => {
   staff = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderStaff();
 });
-db.collection('sponsors').orderBy('createdAt','asc').onSnapshot(snap => {
+db.collection('sponsors').onSnapshot(snap => {
   sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
   renderSponsors();
 });
