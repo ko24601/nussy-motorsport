@@ -963,6 +963,7 @@ const storage = firebase.storage();
 
 // Real-time listeners — load data live for everyone
 function startListeners() {
+  // News
   db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
     news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderNews();
@@ -970,31 +971,37 @@ function startListeners() {
     db.collection('news').onSnapshot(snap => {
       news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
       renderNews();
-    }, e => console.error('news:', e));
+    });
   });
+
+  // Drivers — reads from both 'roster' (existing) and 'drivers' (new)
+  let rosterDocs = [], driverDocs = [];
+  db.collection('roster').onSnapshot(snap => {
+    rosterDocs = snap.docs.map(d => ({ id: 'roster_' + d.id, _col: 'roster', ...d.data() }));
+    drivers = [...rosterDocs.filter(d => !d.type || d.type === 'driver' || d.type === 'Driver'), ...driverDocs];
+    renderDrivers();
+    // Staff from roster with type staff
+    staff = [...rosterDocs.filter(d => d.type === 'staff' || d.type === 'Staff'), ...staffDocs];
+    renderStaff();
+  }, () => {});
+
+  let staffDocs = [];
+  db.collection('staff').onSnapshot(snap => {
+    staffDocs = snap.docs.map(d => ({ id: d.id, _col: 'staff', ...d.data() }));
+    staff = [...rosterDocs.filter(d => d.type === 'staff' || d.type === 'Staff'), ...staffDocs];
+    renderStaff();
+  }, () => {});
 
   db.collection('drivers').onSnapshot(snap => {
-    drivers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    driverDocs = snap.docs.map(d => ({ id: d.id, _col: 'drivers', ...d.data() }));
+    drivers = [...rosterDocs.filter(d => !d.type || d.type === 'driver' || d.type === 'Driver'), ...driverDocs];
     renderDrivers();
-  }, e => {
-    console.error('drivers:', e.code, e.message);
-    document.getElementById('drivers-grid').innerHTML =
-      `<div class="driver-empty">⚠ ${e.code === 'permission-denied' ? 'Firestore rules blocking reads — set rules to allow read: if true' : e.message}</div>`;
-  });
-
-  db.collection('staff').onSnapshot(snap => {
-    staff = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-    renderStaff();
-  }, e => {
-    console.error('staff:', e.code, e.message);
-    document.getElementById('staff-grid').innerHTML =
-      `<div class="driver-empty">⚠ ${e.code === 'permission-denied' ? 'Firestore rules blocking reads — set rules to allow read: if true' : e.message}</div>`;
-  });
+  }, () => {});
 
   db.collection('sponsors').onSnapshot(snap => {
     sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
     renderSponsors();
-  }, e => console.error('sponsors:', e));
+  }, () => {});
 }
 
 startListeners();
@@ -1370,7 +1377,9 @@ async function addDriver() {
     }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteDriver(id) {
-  db.collection('drivers').doc(id).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
+  const col = id.startsWith('roster_') ? 'roster' : 'drivers';
+  const docId = id.startsWith('roster_') ? id.replace('roster_','') : id;
+  db.collection(col).doc(docId).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
 }
 function renderDrivers() {
   const grid = document.getElementById('drivers-grid');
@@ -1410,7 +1419,9 @@ async function addStaff() {
     }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteStaff(id) {
-  db.collection('staff').doc(id).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
+  const col = id.startsWith('roster_') ? 'roster' : 'staff';
+  const docId = id.startsWith('roster_') ? id.replace('roster_','') : id;
+  db.collection(col).doc(docId).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
 }
 function renderStaff() {
   const grid = document.getElementById('staff-grid');
