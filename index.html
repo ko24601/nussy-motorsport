@@ -141,15 +141,75 @@
   #cursor::after  { content:''; position:absolute; width:1px; height:12px; background:rgba(170,255,0,.4); top:50%; left:50%; transform:translate(-50%,-50%) translateY(-18px); box-shadow:0 24px 0 rgba(170,255,0,.4); }
   body.cursor-hover #cursor-ring { width:48px; height:48px; border-color:var(--gold); box-shadow:0 0 12px var(--gold-glow); }
 
-  /* ── MOBILE NAV ── */
-  #mob-btn { display:none; flex-direction:column; gap:5px; cursor:none; background:none; border:none; padding:6px; margin-left:auto; z-index:1; }
+  /* ── NAV MENU ── */
+  #mob-btn {
+    display:flex; flex-direction:column; gap:5px;
+    cursor:none; background:none; border:none; padding:6px;
+    margin-left:12px; z-index:1; flex-shrink:0;
+  }
   #mob-btn span { display:block; width:24px; height:2px; background:var(--gold); transition:all .3s; box-shadow:0 0 6px var(--gold-glow); }
-  #mob-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)} #mob-btn.open span:nth-child(2){opacity:0} #mob-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
-  #mob-nav { display:none; position:fixed; top:0; right:0; width:280px; height:100vh; background:var(--dark); border-left:1px solid rgba(170,255,0,.2); z-index:10000; padding:80px 32px 32px; flex-direction:column; gap:8px; transform:translateX(100%); transition:transform .35s cubic-bezier(.4,0,.2,1); }
+  #mob-btn.open span:nth-child(1){transform:translateY(7px) rotate(45deg)}
+  #mob-btn.open span:nth-child(2){opacity:0}
+  #mob-btn.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg)}
+
+  #mob-nav {
+    display:flex; position:fixed; top:0; right:0;
+    width:300px; height:100vh;
+    background:var(--dark);
+    border-left:1px solid rgba(170,255,0,.15);
+    z-index:10000;
+    padding:0;
+    flex-direction:column;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    overflow-y:auto;
+  }
   #mob-nav.open { transform:translateX(0); }
+
   #mob-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.7); z-index:9999; backdrop-filter:blur(4px); }
-  #mob-nav a,#mob-nav button { font-family:'Orbitron',monospace; font-size:13px; font-weight:700; letter-spacing:3px; color:var(--text); text-decoration:none; text-transform:uppercase; padding:14px 0; border-bottom:1px solid var(--border); background:none; border-left:none; border-right:none; border-top:none; cursor:none; text-align:left; transition:color .2s; }
-  #mob-nav a:hover,#mob-nav button:hover { color:var(--gold); }
+
+  .nav-header {
+    padding:28px 28px 20px;
+    border-bottom:1px solid var(--border);
+    display:flex; align-items:center; justify-content:space-between;
+    flex-shrink:0;
+  }
+  .nav-header span {
+    font-family:'Orbitron',monospace; font-size:10px;
+    letter-spacing:4px; color:var(--gold); text-transform:uppercase;
+  }
+  .nav-close { background:none; border:none; color:var(--muted); font-size:20px; cursor:none; transition:color .2s; }
+  .nav-close:hover { color:var(--gold); }
+
+  .nav-section-title {
+    font-family:'Orbitron',monospace; font-size:8px;
+    letter-spacing:4px; text-transform:uppercase;
+    color:var(--muted); padding:20px 28px 8px;
+  }
+
+  .nav-item {
+    display:flex; align-items:center; gap:14px;
+    padding:14px 28px; font-family:'Orbitron',monospace;
+    font-size:12px; font-weight:700; letter-spacing:2px;
+    color:var(--text); text-decoration:none; text-transform:uppercase;
+    background:none; border:none; width:100%; text-align:left;
+    cursor:none; transition:all .2s; position:relative;
+    border-bottom:1px solid rgba(255,255,255,.03);
+  }
+  .nav-item::before {
+    content:''; width:2px; height:0;
+    background:var(--gold); box-shadow:0 0 8px var(--gold-glow);
+    transition:height .2s; flex-shrink:0;
+  }
+  .nav-item:hover { color:var(--gold); padding-left:32px; }
+  .nav-item:hover::before { height:16px; }
+
+  .nav-item .nav-icon { font-size:14px; width:20px; text-align:center; flex-shrink:0; }
+
+  .nav-divider { height:1px; background:var(--border); margin:8px 28px; }
+
+  .nav-item.accent { color:var(--gold); }
+  .nav-item.accent:hover { color:#fff; }
 
   /* ── HEADER ── */
   header { position:relative; padding:60px 40px 44px; border-bottom:1px solid var(--border); overflow:hidden; z-index:10; }
@@ -776,7 +836,7 @@
 
   /* ── RESPONSIVE ── */
   @media(max-width:768px){
-    #mob-btn{display:flex;} .header-actions{display:none;} #mob-nav,#mob-overlay{display:flex;}
+    .header-actions{display:none;}
     header{padding:48px 20px 36px;} main{padding:0 20px 60px;} .admin-grid{grid-template-columns:1fr;}
     .stat-grid{grid-template-columns:repeat(3,1fr);} footer{flex-direction:column;gap:8px;text-align:center;}
     .series-section{grid-template-columns:1fr;} .hero-content{padding:80px 20px 60px;}
@@ -858,11 +918,30 @@
   </div>
 </div>
 
-<!-- MOBILE NAV -->
+<!-- NAV MENU -->
 <div id="mob-overlay" onclick="closeMobNav()"></div>
 <nav id="mob-nav">
-  <a href="https://discord.gg/3FcMCvKBUq" target="_blank">⚡ Discord</a>
-  <button onclick="closeMobNav();openLogin();">Admin</button>
+  <div class="nav-header">
+    <span>Navigation</span>
+    <button class="nav-close" onclick="closeMobNav()">✕</button>
+  </div>
+
+  <div class="nav-section-title">Page</div>
+  <button class="nav-item" onclick="navTo('body')"><span class="nav-icon">🏠</span>Home</button>
+  <button class="nav-item" onclick="navTo('sec-news')"><span class="nav-icon">📡</span>Latest News</button>
+  <button class="nav-item" onclick="navTo('sec-drivers')"><span class="nav-icon">🏎</span>Drivers</button>
+  <button class="nav-item" onclick="navTo('sec-staff')"><span class="nav-icon">👥</span>Staff</button>
+  <button class="nav-item" onclick="navTo('sec-sponsors')"><span class="nav-icon">🤝</span>Sponsors</button>
+  <button class="nav-item" onclick="navTo('sec-journey')"><span class="nav-icon">📅</span>The Journey</button>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Links</div>
+  <button class="nav-item accent" onclick="closeMobNav();openSponsored()"><span class="nav-icon">🏆</span>Who We Sponsor</button>
+  <a class="nav-item" href="https://discord.gg/3FcMCvKBUq" target="_blank" onclick="closeMobNav()"><span class="nav-icon">⚡</span>Discord</a>
+
+  <div class="nav-divider"></div>
+  <div class="nav-section-title">Admin</div>
+  <button class="nav-item" onclick="closeMobNav();openLogin()"><span class="nav-icon">🔐</span>Admin Login</button>
 </nav>
 
 <!-- LOGIN MODAL -->
@@ -1060,19 +1139,19 @@
     </div>
   </div>
 
-  <div class="section-label reveal"><h2>Latest News</h2></div>
+  <div id="sec-news" class="section-label reveal"><h2>Latest News</h2></div>
   <div id="news-feed"><div class="news-empty">No news yet — check back soon</div></div>
 
-  <div class="section-label reveal"><h2>Drivers</h2></div>
+  <div id="sec-drivers" class="section-label reveal"><h2>Drivers</h2></div>
   <div id="drivers-grid" class="drivers-grid"><div class="driver-empty">No drivers yet</div></div>
 
-  <div class="section-label reveal"><h2>Staff</h2></div>
+  <div id="sec-staff" class="section-label reveal"><h2>Staff</h2></div>
   <div id="staff-grid" class="staff-grid"></div>
 
-  <div class="section-label reveal"><h2>Sponsors</h2></div>
+  <div id="sec-sponsors" class="section-label reveal"><h2>Sponsors</h2></div>
   <div id="sponsors-grid" class="sponsors-grid"></div>
 
-  <div class="section-label reveal"><h2>The Journey</h2></div>
+  <div id="sec-journey" class="section-label reveal"><h2>The Journey</h2></div>
   <div class="timeline">
 
     <div class="tl-item reveal">
@@ -1411,8 +1490,22 @@ document.querySelectorAll('.btn').forEach(btn=>{ btn.addEventListener('click',e=
 })();
 
 // ─── MOBILE NAV ───
-function toggleMobNav(){ const n=document.getElementById('mob-nav'),b=document.getElementById('mob-btn'),o=document.getElementById('mob-overlay');const open=n.classList.toggle('open');b.classList.toggle('open',open);o.style.display=open?'block':'none'; }
-function closeMobNav(){ document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-btn').classList.remove('open');document.getElementById('mob-overlay').style.display='none'; }
+function toggleMobNav(){
+  const n=document.getElementById('mob-nav'),b=document.getElementById('mob-btn'),o=document.getElementById('mob-overlay');
+  const open=n.classList.toggle('open');
+  b.classList.toggle('open',open);
+  o.style.display=open?'block':'none';
+}
+function closeMobNav(){
+  document.getElementById('mob-nav').classList.remove('open');
+  document.getElementById('mob-btn').classList.remove('open');
+  document.getElementById('mob-overlay').style.display='none';
+}
+function navTo(id){
+  closeMobNav();
+  const el = id === 'body' ? document.body : document.getElementById(id);
+  if(el) setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),300);
+}
 
 // ─── AUTH ───
 function openLogin(){ document.getElementById('login-overlay').classList.add('visible'); setTimeout(()=>document.getElementById('admin-email').focus(),100); }
