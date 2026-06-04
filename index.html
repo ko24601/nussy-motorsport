@@ -6,6 +6,20 @@
 <title>Nussy Motorsport</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600;700&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="logo.png">
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script>
+  firebase.initializeApp({
+    apiKey: "AIzaSyA0zb71MZOh5Ew8jVkGV2iR37xcDSkxwrE",
+    authDomain: "nussy-motorsports.firebaseapp.com",
+    projectId: "nussy-motorsports",
+    storageBucket: "nussy-motorsports.firebasestorage.app",
+    messagingSenderId: "967125816795",
+    appId: "1:967125816795:web:d4b1198a2826cfe4ffc3fe",
+    measurementId: "G-BZF01VGV3R"
+  });
+</script>
 
 <!-- Heat haze SVG filter -->
 <svg style="display:none" xmlns="http://www.w3.org/2000/svg">
@@ -693,6 +707,10 @@
     <h3>Admin Access</h3>
     <p>Enter credentials to manage news</p>
     <div class="form-group">
+      <label>Email</label>
+      <input type="email" id="admin-email" placeholder="admin@nussymotorsport.de" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <div class="form-group">
       <label>Password</label>
       <input type="password" id="admin-password" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
     </div>
@@ -906,10 +924,18 @@
 </footer>
 
 <script>
-const ADMIN_PASSWORD = 'Nussy2026?';
 const STORAGE_KEY = 'nussy_news';
 let isAdmin = false;
 let news = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+
+// Restore session if still signed in
+firebase.auth().onAuthStateChanged(user => {
+  if (user) {
+    isAdmin = true;
+    document.getElementById('admin-panel').classList.add('visible');
+    renderNews(); renderDrivers(); renderStaff(); renderSponsors();
+  }
+});
 
 // ─── LOADING SCREEN ───
 (function(){
@@ -1158,10 +1184,37 @@ function toggleMobNav(){ const n=document.getElementById('mob-nav'),b=document.g
 function closeMobNav(){ document.getElementById('mob-nav').classList.remove('open');document.getElementById('mob-btn').classList.remove('open');document.getElementById('mob-overlay').style.display='none'; }
 
 // ─── AUTH ───
-function openLogin(){ document.getElementById('login-overlay').classList.add('visible');setTimeout(()=>document.getElementById('admin-password').focus(),100); }
-function closeLogin(){ document.getElementById('login-overlay').classList.remove('visible');document.getElementById('admin-password').value='';document.getElementById('login-error').style.display='none'; }
-function tryLogin(){ const pw=document.getElementById('admin-password').value;if(pw===ADMIN_PASSWORD){isAdmin=true;closeLogin();document.getElementById('admin-panel').classList.add('visible');renderNews();renderDrivers();renderStaff();renderSponsors();notify('✓ Admin access granted');}else{document.getElementById('login-error').style.display='block';document.getElementById('admin-password').value='';document.getElementById('admin-password').focus();} }
-function logout(){ isAdmin=false;document.getElementById('admin-panel').classList.remove('visible');notify('Logged out'); }
+function openLogin(){ document.getElementById('login-overlay').classList.add('visible'); setTimeout(()=>document.getElementById('admin-email').focus(),100); }
+function closeLogin(){ document.getElementById('login-overlay').classList.remove('visible'); document.getElementById('admin-email').value=''; document.getElementById('admin-password').value=''; document.getElementById('login-error').style.display='none'; }
+
+function tryLogin(){
+  const email = document.getElementById('admin-email').value.trim();
+  const pw    = document.getElementById('admin-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+  firebase.auth().signInWithEmailAndPassword(email, pw)
+    .then(() => {
+      isAdmin = true;
+      closeLogin();
+      document.getElementById('admin-panel').classList.add('visible');
+      renderNews(); renderDrivers(); renderStaff(); renderSponsors();
+      notify('✓ Admin access granted');
+    })
+    .catch(err => {
+      errEl.textContent = '⚠ ' + (err.code === 'auth/invalid-credential' ? 'Invalid email or password' : err.message);
+      errEl.style.display = 'block';
+      document.getElementById('admin-password').value = '';
+    });
+}
+
+function logout(){
+  firebase.auth().signOut().then(() => {
+    isAdmin = false;
+    document.getElementById('admin-panel').classList.remove('visible');
+    renderNews(); renderDrivers(); renderStaff(); renderSponsors();
+    notify('Logged out');
+  });
+}
 
 // ─── NEWS ───
 function postNews(){ const title=document.getElementById('news-title').value.trim(),body=document.getElementById('news-body').value.trim(),tag=document.getElementById('news-tag').value;if(!title||!body){notify('⚠ Title and content required');return;} news.unshift({id:Date.now(),title,body,tag,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),author:'Admin'});saveNews();renderNews();clearForm();notify('✓ News published!'); }
