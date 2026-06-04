@@ -9,6 +9,7 @@
 <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
 <script>
   firebase.initializeApp({
     apiKey: "AIzaSyA0zb71MZOh5Ew8jVkGV2iR37xcDSkxwrE",
@@ -924,9 +925,27 @@
 </footer>
 
 <script>
-const STORAGE_KEY = 'nussy_news';
 let isAdmin = false;
-let news = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+let news = [], drivers = [], staff = [], sponsors = [];
+const db = firebase.firestore();
+
+// Real-time listeners — load data live for everyone
+db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
+  news = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderNews();
+});
+db.collection('drivers').orderBy('createdAt','asc').onSnapshot(snap => {
+  drivers = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderDrivers();
+});
+db.collection('staff').orderBy('createdAt','asc').onSnapshot(snap => {
+  staff = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderStaff();
+});
+db.collection('sponsors').orderBy('createdAt','asc').onSnapshot(snap => {
+  sponsors = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  renderSponsors();
+});
 
 // Restore session if still signed in
 firebase.auth().onAuthStateChanged(user => {
@@ -1216,26 +1235,6 @@ function logout(){
   });
 }
 
-// ─── NEWS ───
-function postNews(){ const title=document.getElementById('news-title').value.trim(),body=document.getElementById('news-body').value.trim(),tag=document.getElementById('news-tag').value;if(!title||!body){notify('⚠ Title and content required');return;} news.unshift({id:Date.now(),title,body,tag,date:new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),author:'Admin'});saveNews();renderNews();clearForm();notify('✓ News published!'); }
-function deleteNews(id){ news=news.filter(n=>n.id!==id);saveNews();renderNews();notify('Post deleted'); }
-function saveNews(){ localStorage.setItem(STORAGE_KEY,JSON.stringify(news)); }
-function clearForm(){ document.getElementById('news-title').value='';document.getElementById('news-body').value=''; }
-function renderNews(){
-  const feed=document.getElementById('news-feed');
-  if(news.length===0){feed.innerHTML='<div class="news-empty">No news yet — check back soon</div>';return;}
-  feed.innerHTML=news.map((item,i)=>`
-    <div class="news-card visor reveal" style="animation-delay:${i*.05}s">
-      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
-      <div class="holo-shimmer"></div><div class="card-scan"></div>
-      <span class="tag">${item.tag}</span>
-      <h3>${escHtml(item.title)}</h3><p>${escHtml(item.body)}</p>
-      <div class="meta"><span class="date">${item.date}</span><span class="author">${item.author}${isAdmin?` &nbsp;·&nbsp; <span style="color:#ff5555;cursor:pointer;font-size:11px;" onclick="deleteNews(${item.id})">✕ Delete</span>`:''}</span></div>
-    </div>`).join('');
-  observeReveal();initCardTilt();
-}
-function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-
 // ─── ADMIN TABS ───
 function switchTab(name, btn) {
   document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
@@ -1244,31 +1243,55 @@ function switchTab(name, btn) {
   btn.classList.add('active');
 }
 
-// ─── DRIVERS ───
-let drivers = JSON.parse(localStorage.getItem('nussy_drivers') || '[]');
+// ─── NEWS ───
+function postNews() {
+  const title = document.getElementById('news-title').value.trim();
+  const body  = document.getElementById('news-body').value.trim();
+  const tag   = document.getElementById('news-tag').value;
+  if (!title || !body) { notify('⚠ Title and content required'); return; }
+  db.collection('news').add({
+    title, body, tag,
+    date: new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'}),
+    author: 'Admin',
+    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+  }).then(() => { clearForm(); notify('✓ News published!'); })
+    .catch(e => notify('⚠ ' + e.message));
+}
+function deleteNews(id) {
+  db.collection('news').doc(id).delete()
+    .then(() => notify('Post deleted'))
+    .catch(e => notify('⚠ ' + e.message));
+}
+function clearForm() { document.getElementById('news-title').value=''; document.getElementById('news-body').value=''; }
+function renderNews() {
+  const feed = document.getElementById('news-feed');
+  if (!feed) return;
+  if (news.length === 0) { feed.innerHTML = '<div class="news-empty">No news yet — check back soon</div>'; return; }
+  feed.innerHTML = news.map((item,i) => `
+    <div class="news-card visor reveal" style="animation-delay:${i*.05}s">
+      <span class="corner tl"></span><span class="corner tr"></span><span class="corner bl"></span><span class="corner br"></span>
+      <div class="holo-shimmer"></div><div class="card-scan"></div>
+      <span class="tag">${escHtml(item.tag)}</span>
+      <h3>${escHtml(item.title)}</h3><p>${escHtml(item.body)}</p>
+      <div class="meta"><span class="date">${item.date}</span><span class="author">${item.author}${isAdmin ? ` &nbsp;·&nbsp; <span style="color:#ff5555;cursor:pointer;font-size:11px;" onclick="deleteNews('${item.id}')">✕ Delete</span>` : ''}</span></div>
+    </div>`).join('');
+  observeReveal(); initCardTilt();
+}
 
+// ─── DRIVERS ───
 function addDriver() {
-  const name = document.getElementById('drv-name').value.trim();
-  const num  = document.getElementById('drv-num').value.trim();
-  const role = document.getElementById('drv-role').value.trim();
+  const name   = document.getElementById('drv-name').value.trim();
+  const num    = document.getElementById('drv-num').value.trim();
+  const role   = document.getElementById('drv-role').value.trim();
   const status = document.getElementById('drv-status').value;
   if (!name) { notify('⚠ Driver name required'); return; }
-  drivers.push({ id: Date.now(), name, num, role, status });
-  localStorage.setItem('nussy_drivers', JSON.stringify(drivers));
-  renderDrivers();
-  document.getElementById('drv-name').value = '';
-  document.getElementById('drv-num').value = '';
-  document.getElementById('drv-role').value = '';
-  notify('✓ Driver added');
+  db.collection('drivers').add({ name, num, role, status, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => { document.getElementById('drv-name').value=''; document.getElementById('drv-num').value=''; document.getElementById('drv-role').value=''; notify('✓ Driver added'); })
+    .catch(e => notify('⚠ ' + e.message));
 }
-
 function deleteDriver(id) {
-  drivers = drivers.filter(d => d.id !== id);
-  localStorage.setItem('nussy_drivers', JSON.stringify(drivers));
-  renderDrivers();
-  notify('Driver removed');
+  db.collection('drivers').doc(id).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
 }
-
 function renderDrivers() {
   const grid = document.getElementById('drivers-grid');
   if (!grid) return;
@@ -1280,36 +1303,25 @@ function renderDrivers() {
       <div class="driver-name">${escHtml(d.name)}</div>
       <div class="driver-status ${d.status === 'reserve' ? 'reserve' : ''}">
         <span class="dot"></span>${d.status === 'reserve' ? 'Reserve' : 'Active'}
-        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:12px;font-size:10px;" onclick="deleteDriver(${d.id})">✕</span>` : ''}
+        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:12px;font-size:10px;" onclick="deleteDriver('${d.id}')">✕</span>` : ''}
       </div>
     </div>`).join('');
   observeReveal();
 }
 
 // ─── STAFF ───
-let staff = JSON.parse(localStorage.getItem('nussy_staff') || '[]');
-
 function addStaff() {
   const name  = document.getElementById('stf-name').value.trim();
   const title = document.getElementById('stf-title').value.trim();
   const dept  = document.getElementById('stf-dept').value.trim();
   if (!name) { notify('⚠ Name required'); return; }
-  staff.push({ id: Date.now(), name, title, dept });
-  localStorage.setItem('nussy_staff', JSON.stringify(staff));
-  renderStaff();
-  document.getElementById('stf-name').value = '';
-  document.getElementById('stf-title').value = '';
-  document.getElementById('stf-dept').value = '';
-  notify('✓ Staff member added');
+  db.collection('staff').add({ name, title, dept, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => { document.getElementById('stf-name').value=''; document.getElementById('stf-title').value=''; document.getElementById('stf-dept').value=''; notify('✓ Staff member added'); })
+    .catch(e => notify('⚠ ' + e.message));
 }
-
 function deleteStaff(id) {
-  staff = staff.filter(s => s.id !== id);
-  localStorage.setItem('nussy_staff', JSON.stringify(staff));
-  renderStaff();
-  notify('Staff member removed');
+  db.collection('staff').doc(id).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
 }
-
 function renderStaff() {
   const grid = document.getElementById('staff-grid');
   if (!grid) return;
@@ -1319,52 +1331,44 @@ function renderStaff() {
       <div class="staff-dept">${escHtml(s.dept || 'Team')}</div>
       <div class="staff-name">${escHtml(s.name)}</div>
       <div class="staff-title">${escHtml(s.title || '')}
-        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:10px;font-size:10px;" onclick="deleteStaff(${s.id})">✕</span>` : ''}
+        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:10px;font-size:10px;" onclick="deleteStaff('${s.id}')">✕</span>` : ''}
       </div>
     </div>`).join('');
   observeReveal();
 }
 
 // ─── SPONSORS ───
-let sponsors = JSON.parse(localStorage.getItem('nussy_sponsors') || '[]');
-
 function addSponsor() {
   const name = document.getElementById('spn-name').value.trim();
   const tier = document.getElementById('spn-tier').value;
   const url  = document.getElementById('spn-url').value.trim();
   if (!name) { notify('⚠ Sponsor name required'); return; }
-  sponsors.push({ id: Date.now(), name, tier, url });
-  localStorage.setItem('nussy_sponsors', JSON.stringify(sponsors));
-  renderSponsors();
-  document.getElementById('spn-name').value = '';
-  document.getElementById('spn-url').value = '';
-  notify('✓ Sponsor added');
+  db.collection('sponsors').add({ name, tier, url, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => { document.getElementById('spn-name').value=''; document.getElementById('spn-url').value=''; notify('✓ Sponsor added'); })
+    .catch(e => notify('⚠ ' + e.message));
 }
-
 function deleteSponsor(id) {
-  sponsors = sponsors.filter(s => s.id !== id);
-  localStorage.setItem('nussy_sponsors', JSON.stringify(sponsors));
-  renderSponsors();
-  notify('Sponsor removed');
+  db.collection('sponsors').doc(id).delete().then(() => notify('Sponsor removed')).catch(e => notify('⚠ ' + e.message));
 }
-
 function renderSponsors() {
   const grid = document.getElementById('sponsors-grid');
   if (!grid) return;
   if (sponsors.length === 0) { grid.innerHTML = '<div class="driver-empty">No sponsors yet</div>'; return; }
   grid.innerHTML = sponsors.map(s => {
-    const tag = s.url ? `<a href="${escHtml(s.url)}" target="_blank" class="sponsor-card visor reveal">` : `<div class="sponsor-card visor reveal">`;
+    const tag   = s.url ? `<a href="${escHtml(s.url)}" target="_blank" class="sponsor-card visor reveal">` : `<div class="sponsor-card visor reveal">`;
     const close = s.url ? `</a>` : `</div>`;
     return `${tag}
       <div class="holo-shimmer"></div>
       <div class="sponsor-tier">${escHtml(s.tier)}</div>
       <div class="sponsor-name">${escHtml(s.name)}</div>
       ${s.url ? `<div class="sponsor-link">${escHtml(s.url.replace(/^https?:\/\//,''))}</div>` : ''}
-      ${isAdmin ? `<div style="color:#ff5555;cursor:pointer;font-size:10px;margin-top:8px;" onclick="event.preventDefault();deleteSponsor(${s.id})">✕ Remove</div>` : ''}
+      ${isAdmin ? `<div style="color:#ff5555;cursor:pointer;font-size:10px;margin-top:8px;" onclick="event.preventDefault();deleteSponsor('${s.id}')">✕ Remove</div>` : ''}
     ${close}`;
   }).join('');
   observeReveal();
 }
+
+function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
 // ─── NOTIFY ───
 function notify(msg){ const el=document.getElementById('notif');el.textContent=msg;el.style.display='block';clearTimeout(window._nt);window._nt=setTimeout(()=>{el.style.display='none';},3000); }
@@ -1373,10 +1377,7 @@ function notify(msg){ const el=document.getElementById('notif');el.textContent=m
 (function(){ const start=new Date('2026-04-23T00:00:00'),today=new Date();today.setHours(0,0,0,0);document.getElementById('day-count').textContent='DAY '+(Math.floor((today-start)/86400000)+1); })();
 
 // ─── INIT ───
-renderNews();
-renderDrivers();
-renderStaff();
-renderSponsors();
+// Data rendering is handled by Firestore onSnapshot listeners above
 document.getElementById('login-overlay').addEventListener('click',function(e){if(e.target===this)closeLogin();});
 (function(){ try{ function sr(){ window.parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); try{window.parent.document.querySelectorAll('iframe').forEach(f=>{try{if(f.contentWindow===window){f.style.cssText='width:100%!important;height:100vh!important;border:none!important;display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:99999!important;';}}catch(e){}});}catch(e){}} sr();window.addEventListener('resize',sr);[500,1500,3000].forEach(t=>setTimeout(sr,t)); }catch(e){} })();
 </script>
