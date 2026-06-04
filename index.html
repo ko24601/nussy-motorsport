@@ -551,33 +551,84 @@
   }
 
   /* ── DRIVERS ── */
-  .drivers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:2px; }
+  .drivers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:16px; }
 
   .driver-card {
     background:var(--card); border:1px solid var(--border);
-    border-left:3px solid var(--gold);
-    padding:32px 28px; position:relative; overflow:hidden;
-    transition:border-color .3s,background .3s;
+    position:relative; overflow:hidden;
+    transition:border-color .3s, transform .2s, box-shadow .3s;
+    border-radius:2px;
   }
-  .driver-card:hover { border-color:rgba(170,255,0,.35); background:#131413; }
+  .driver-card:hover {
+    border-color:rgba(170,255,0,.3);
+    transform:translateY(-4px);
+    box-shadow:0 12px 40px rgba(0,0,0,.5), 0 0 20px rgba(170,255,0,.06);
+  }
 
+  /* Photo area */
+  .driver-photo-wrap {
+    position:relative; width:100%; height:220px; overflow:hidden;
+    background:var(--dark);
+  }
+  .driver-photo-wrap img {
+    width:100%; height:100%; object-fit:cover; object-position:top center;
+    display:block; transition:transform .4s ease, filter .4s ease;
+    filter:grayscale(10%) contrast(1.05);
+  }
+  .driver-card:hover .driver-photo-wrap img { transform:scale(1.04); filter:grayscale(0%) contrast(1.1); }
+
+  /* No photo placeholder */
+  .driver-photo-wrap.no-photo {
+    display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--dark),var(--card));
+    height:160px;
+  }
+  .driver-photo-wrap.no-photo::after {
+    content:''; width:60px; height:60px; border-radius:50%;
+    background:rgba(170,255,0,.05); border:1px solid rgba(170,255,0,.15);
+  }
+
+  /* Gold bar at bottom of photo */
+  .driver-photo-wrap::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:3px;
+    background:linear-gradient(90deg,var(--gold),var(--amber),transparent);
+  }
+
+  /* Ghost number watermark */
   .driver-num {
-    position:absolute; right:-10px; top:50%; transform:translateY(-50%);
-    font-family:'Orbitron',monospace; font-size:110px; font-weight:900;
-    color:transparent; -webkit-text-stroke:1px rgba(170,255,0,.06);
-    line-height:1; pointer-events:none; user-select:none;
+    position:absolute; right:-8px; bottom:-10px;
+    font-family:'Orbitron',monospace; font-size:100px; font-weight:900;
+    color:transparent; -webkit-text-stroke:1px rgba(170,255,0,.07);
+    line-height:1; pointer-events:none; user-select:none; z-index:0;
     transition:-webkit-text-stroke .3s;
   }
-  .driver-card:hover .driver-num { -webkit-text-stroke:1px rgba(170,255,0,.14); }
+  .driver-card:hover .driver-num { -webkit-text-stroke:1px rgba(170,255,0,.18); }
 
-  .driver-role { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); margin-bottom:10px; }
-  .driver-name { font-family:'Orbitron',monospace; font-size:clamp(16px,2vw,22px); font-weight:900; color:#fff; margin-bottom:14px; line-height:1.1; }
-  .driver-bio { font-size:13px; line-height:1.6; color:var(--muted); margin:10px 0; }
-  .driver-status { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
-  .driver-status .dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold-glow); animation:blink 2s step-start infinite; }
+  .driver-info { padding:20px 22px 22px; position:relative; z-index:1; }
+
+  .driver-role {
+    font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase;
+    color:var(--amber); margin-bottom:8px; display:flex; align-items:center; gap:8px;
+  }
+  .driver-nation { color:var(--muted); letter-spacing:2px; }
+
+  .driver-name {
+    font-family:'Orbitron',monospace; font-size:clamp(15px,2vw,20px);
+    font-weight:900; color:#fff; margin-bottom:10px; line-height:1.1;
+  }
+  .driver-bio { font-size:13px; line-height:1.6; color:var(--muted); margin-bottom:14px; }
+
+  .driver-footer {
+    display:flex; align-items:center; justify-content:space-between;
+    padding-top:12px; border-top:1px solid var(--border);
+    gap:8px; flex-wrap:wrap;
+  }
+  .driver-status { display:inline-flex; align-items:center; gap:6px; font-size:9px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .driver-status .dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold-glow); animation:blink 2s step-start infinite; flex-shrink:0; }
   .driver-status.reserve .dot { background:var(--muted); box-shadow:none; animation:none; }
+  .driver-social { font-size:11px; color:var(--gold-dim); letter-spacing:1px; }
 
-  .driver-empty { grid-column:1/-1; text-align:center; padding:48px; color:var(--muted); font-size:13px; letter-spacing:3px; text-transform:uppercase; border:1px dashed var(--border); }
+  .driver-empty,.staff-empty { grid-column:1/-1; text-align:center; padding:48px; color:var(--muted); font-size:13px; letter-spacing:3px; text-transform:uppercase; border:1px dashed var(--border); }
 
   /* ── IMAGE UPLOAD ── */
   .img-upload-wrap input[type="file"] { display:none; }
@@ -591,26 +642,47 @@
   .img-upload-label:hover { border-color:rgba(170,255,0,0.5); color:var(--gold); }
   .img-preview { width:100%; height:110px; object-fit:cover; border:1px solid rgba(170,255,0,0.15); display:none; margin-top:8px; filter:grayscale(20%); }
 
-  /* Cards with photo */
-  .driver-card.has-photo,.staff-card.has-photo { padding-top:0; }
-  .driver-photo,.staff-photo { width:100%; object-fit:cover; object-position:top center; display:block; filter:grayscale(15%) contrast(1.05); }
-  .driver-photo { height:160px; margin-bottom:20px; border-bottom:2px solid var(--gold); }
-  .staff-photo  { height:130px; margin-bottom:16px; border-bottom:1px solid rgba(170,255,0,0.2); }
-
   /* ── STAFF ── */
-  .staff-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:2px; }
+  .staff-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:16px; }
 
   .staff-card {
     background:var(--card); border:1px solid var(--border);
-    padding:28px 24px; position:relative; overflow:hidden;
-    transition:border-color .3s;
+    position:relative; overflow:hidden;
+    transition:border-color .3s, transform .2s, box-shadow .3s;
+    border-radius:2px;
   }
-  .staff-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,var(--gold),transparent); transform:scaleX(0); transform-origin:left; transition:transform .3s; }
-  .staff-card:hover { border-color:rgba(170,255,0,.25); }
-  .staff-card:hover::before { transform:scaleX(1); }
+  .staff-card:hover {
+    border-color:rgba(170,255,0,.25);
+    transform:translateY(-3px);
+    box-shadow:0 8px 30px rgba(0,0,0,.4);
+  }
+  .staff-card::after {
+    content:''; position:absolute; top:0; left:0; right:0; height:2px;
+    background:linear-gradient(90deg,var(--gold),transparent);
+    transform:scaleX(0); transform-origin:left; transition:transform .3s;
+  }
+  .staff-card:hover::after { transform:scaleX(1); }
+
+  /* Staff photo */
+  .staff-photo-wrap {
+    position:relative; width:100%; height:180px; overflow:hidden; background:var(--dark);
+  }
+  .staff-photo-wrap img {
+    width:100%; height:100%; object-fit:cover; object-position:top center;
+    display:block; transition:transform .4s ease, filter .4s;
+    filter:grayscale(15%) contrast(1.05);
+  }
+  .staff-card:hover .staff-photo-wrap img { transform:scale(1.04); filter:grayscale(0%); }
+  .staff-photo-wrap.no-photo {
+    height:80px; display:flex; align-items:center; justify-content:center;
+    background:linear-gradient(135deg,var(--dark),var(--card));
+  }
+
+  .staff-info { padding:18px 20px 20px; }
   .staff-dept { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); margin-bottom:8px; }
-  .staff-name { font-family:'Orbitron',monospace; font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
-  .staff-title { font-size:13px; color:var(--muted); letter-spacing:1px; }
+  .staff-name { font-family:'Orbitron',monospace; font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; line-height:1.2; }
+  .staff-bio  { font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:10px; }
+  .staff-social { font-size:11px; color:var(--gold-dim); letter-spacing:1px; }
 
   /* ── SPONSORS ── */
   .sponsors-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:2px; }
@@ -1379,16 +1451,25 @@ function renderDrivers() {
   grid.innerHTML = drivers.map(d => {
     const photo = d.photoUrl || d.photoURL || '';
     return `
-    <div class="driver-card visor reveal ${photo ? 'has-photo' : ''}">
-      ${photo ? `<img class="driver-photo" src="${escHtml(photo)}" alt="${escHtml(d.name)}">` : ''}
-      <div class="driver-num">${escHtml(d.number || '—')}</div>
-      <div class="driver-role">${escHtml(d.role || 'Driver')}${d.nation ? ` &nbsp;·&nbsp; ${escHtml(d.nation)}` : ''}</div>
-      <div class="driver-name">${escHtml(d.name)}</div>
-      ${d.bio ? `<div class="driver-bio">${escHtml(d.bio)}</div>` : ''}
-      <div class="driver-status ${d.status === 'reserve' ? 'reserve' : ''}">
-        <span class="dot"></span>${d.status === 'reserve' ? 'Reserve' : 'Active'}
-        ${d.social ? `<span style="color:var(--muted);font-size:10px;margin-left:10px;">${escHtml(d.social)}</span>` : ''}
-        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:12px;font-size:10px;" onclick="deleteDriver('${d.id}')">✕</span>` : ''}
+    <div class="driver-card visor reveal">
+      <div class="driver-photo-wrap ${photo ? '' : 'no-photo'}">
+        ${photo ? `<img src="${escHtml(photo)}" alt="${escHtml(d.name)}">` : ''}
+      </div>
+      <div class="driver-num">${escHtml(d.number || '')}</div>
+      <div class="driver-info">
+        <div class="driver-role">
+          ${escHtml(d.role || 'Driver')}
+          ${d.nation ? `<span class="driver-nation">${escHtml(d.nation)}</span>` : ''}
+        </div>
+        <div class="driver-name">${escHtml(d.name)}</div>
+        ${d.bio ? `<div class="driver-bio">${escHtml(d.bio)}</div>` : ''}
+        <div class="driver-footer">
+          <div class="driver-status ${d.status === 'reserve' ? 'reserve' : ''}">
+            <span class="dot"></span>${d.status === 'reserve' ? 'Reserve' : 'Active'}
+          </div>
+          ${d.social ? `<span class="driver-social">${escHtml(d.social)}</span>` : ''}
+          ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;font-size:10px;" onclick="deleteDriver('${d.id}')">✕</span>` : ''}
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -1420,17 +1501,21 @@ function deleteStaff(id) {
 function renderStaff() {
   const grid = document.getElementById('staff-grid');
   if (!grid) return;
-  if (staff.length === 0) { grid.innerHTML = '<div class="driver-empty">No staff yet</div>'; return; }
+  if (staff.length === 0) { grid.innerHTML = '<div class="staff-empty">No staff yet</div>'; return; }
   grid.innerHTML = staff.map(s => {
     const photo = s.photoUrl || s.photoURL || '';
     return `
-    <div class="staff-card reveal ${photo ? 'has-photo' : ''}">
-      ${photo ? `<img class="staff-photo" src="${escHtml(photo)}" alt="${escHtml(s.name)}">` : ''}
-      <div class="staff-dept">${escHtml(s.role || s.dept || 'Team')}${s.nation ? ` &nbsp;·&nbsp; ${escHtml(s.nation)}` : ''}</div>
-      <div class="staff-name">${escHtml(s.name)}</div>
-      ${s.bio ? `<div class="staff-title" style="color:var(--muted);font-size:13px;margin-top:4px;">${escHtml(s.bio)}</div>` : ''}
-      ${s.social ? `<div style="font-size:11px;color:var(--gold-dim);margin-top:6px;letter-spacing:1px;">${escHtml(s.social)}</div>` : ''}
-      ${isAdmin ? `<div style="margin-top:10px;"><span style="color:#ff5555;cursor:pointer;font-size:10px;" onclick="deleteStaff('${s.id}')">✕ Remove</span></div>` : ''}
+    <div class="staff-card reveal">
+      <div class="staff-photo-wrap ${photo ? '' : 'no-photo'}">
+        ${photo ? `<img src="${escHtml(photo)}" alt="${escHtml(s.name)}">` : ''}
+      </div>
+      <div class="staff-info">
+        <div class="staff-dept">${escHtml(s.role || s.dept || 'Team')}${s.nation ? ` · ${escHtml(s.nation)}` : ''}</div>
+        <div class="staff-name">${escHtml(s.name)}</div>
+        ${s.bio ? `<div class="staff-bio">${escHtml(s.bio)}</div>` : ''}
+        ${s.social ? `<div class="staff-social">${escHtml(s.social)}</div>` : ''}
+        ${isAdmin ? `<div style="margin-top:10px;"><span style="color:#ff5555;cursor:pointer;font-size:10px;" onclick="deleteStaff('${s.id}')">✕ Remove</span></div>` : ''}
+      </div>
     </div>`;
   }).join('');
   observeReveal();
