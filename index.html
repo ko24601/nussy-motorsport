@@ -534,6 +534,74 @@
     .tl-dot { left:20px; top:28px; transform:translate(-50%,0); }
   }
 
+  /* ── DRIVERS ── */
+  .drivers-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:2px; }
+
+  .driver-card {
+    background:var(--card); border:1px solid var(--border);
+    border-left:3px solid var(--gold);
+    padding:32px 28px; position:relative; overflow:hidden;
+    transition:border-color .3s,background .3s;
+  }
+  .driver-card:hover { border-color:rgba(170,255,0,.35); background:#131413; }
+
+  .driver-num {
+    position:absolute; right:-10px; top:50%; transform:translateY(-50%);
+    font-family:'Orbitron',monospace; font-size:110px; font-weight:900;
+    color:transparent; -webkit-text-stroke:1px rgba(170,255,0,.06);
+    line-height:1; pointer-events:none; user-select:none;
+    transition:-webkit-text-stroke .3s;
+  }
+  .driver-card:hover .driver-num { -webkit-text-stroke:1px rgba(170,255,0,.14); }
+
+  .driver-role { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); margin-bottom:10px; }
+  .driver-name { font-family:'Orbitron',monospace; font-size:clamp(16px,2vw,22px); font-weight:900; color:#fff; margin-bottom:14px; line-height:1.1; }
+  .driver-status { display:inline-flex; align-items:center; gap:6px; font-size:10px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+  .driver-status .dot { width:6px; height:6px; border-radius:50%; background:var(--gold); box-shadow:0 0 6px var(--gold-glow); animation:blink 2s step-start infinite; }
+  .driver-status.reserve .dot { background:var(--muted); box-shadow:none; animation:none; }
+
+  .driver-empty { grid-column:1/-1; text-align:center; padding:48px; color:var(--muted); font-size:13px; letter-spacing:3px; text-transform:uppercase; border:1px dashed var(--border); }
+
+  /* ── STAFF ── */
+  .staff-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:2px; }
+
+  .staff-card {
+    background:var(--card); border:1px solid var(--border);
+    padding:28px 24px; position:relative; overflow:hidden;
+    transition:border-color .3s;
+  }
+  .staff-card::before { content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,var(--gold),transparent); transform:scaleX(0); transform-origin:left; transition:transform .3s; }
+  .staff-card:hover { border-color:rgba(170,255,0,.25); }
+  .staff-card:hover::before { transform:scaleX(1); }
+  .staff-dept { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); margin-bottom:8px; }
+  .staff-name { font-family:'Orbitron',monospace; font-size:15px; font-weight:700; color:#fff; margin-bottom:6px; }
+  .staff-title { font-size:13px; color:var(--muted); letter-spacing:1px; }
+
+  /* ── SPONSORS ── */
+  .sponsors-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:2px; }
+
+  .sponsor-card {
+    background:var(--card); border:1px solid var(--border);
+    padding:32px 24px; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; gap:12px; position:relative; overflow:hidden;
+    transition:border-color .3s,background .3s; cursor:none;
+    text-decoration:none;
+  }
+  .sponsor-card:hover { border-color:rgba(170,255,0,.3); background:#131413; }
+  .sponsor-card .holo-shimmer { position:absolute; inset:0; background:linear-gradient(135deg,transparent,rgba(170,255,0,.04) 40%,rgba(0,229,255,.05) 60%,transparent); background-size:300% 300%; opacity:0; pointer-events:none; animation:holoShift 3s ease infinite paused; }
+  .sponsor-card:hover .holo-shimmer { opacity:1; animation-play-state:running; }
+  .sponsor-tier { font-size:9px; font-weight:700; letter-spacing:4px; text-transform:uppercase; color:var(--amber); }
+  .sponsor-name { font-family:'Orbitron',monospace; font-size:16px; font-weight:900; color:var(--gold); text-shadow:0 0 12px var(--gold-glow); }
+  .sponsor-link { font-size:11px; color:var(--muted); letter-spacing:1px; }
+
+  /* ── ADMIN TABS ── */
+  .admin-tabs { display:flex; gap:2px; margin-bottom:28px; }
+  .admin-tab { font-family:'Orbitron',monospace; font-size:10px; font-weight:700; letter-spacing:3px; text-transform:uppercase; padding:10px 18px; background:var(--carbon); border:1px solid var(--border); color:var(--muted); cursor:none; transition:all .2s; }
+  .admin-tab.active { background:rgba(170,255,0,.08); border-color:rgba(170,255,0,.35); color:var(--gold); }
+  .admin-tab:hover:not(.active) { border-color:rgba(170,255,0,.2); color:#aaa; }
+  .admin-section { display:none; }
+  .admin-section.active { display:block; }
+
   /* ── KONAMI ── */
   #konami-overlay { position:fixed; inset:0; z-index:999999; background:#000; display:none; align-items:center; justify-content:center; flex-direction:column; gap:20px; overflow:hidden; }
   #konami-overlay.active { display:flex; }
@@ -713,21 +781,77 @@
 <main>
   <div id="admin-panel">
     <div class="admin-header">
-      <h3>📡 Post News Update</h3>
+      <h3>⚙ Command Centre</h3>
       <button class="btn btn-ghost" style="font-size:11px;" onclick="logout()">Logout</button>
     </div>
-    <div class="admin-grid">
-      <div class="form-group"><label>Headline</label><input type="text" id="news-title" placeholder="e.g. Race 5 Results — Monza Sprint"></div>
-      <div class="form-group"><label>Category</label>
-        <select id="news-tag"><option value="RESULTS">Results</option><option value="ANNOUNCEMENT">Announcement</option><option value="DRIVER NEWS">Driver News</option><option value="TECHNICAL">Technical</option><option value="LEAGUE NEWS">League News</option></select>
+
+    <!-- TABS -->
+    <div class="admin-tabs">
+      <button class="admin-tab active" onclick="switchTab('news',this)">News</button>
+      <button class="admin-tab" onclick="switchTab('drivers',this)">Drivers</button>
+      <button class="admin-tab" onclick="switchTab('staff',this)">Staff</button>
+      <button class="admin-tab" onclick="switchTab('sponsors',this)">Sponsors</button>
+    </div>
+
+    <!-- NEWS TAB -->
+    <div class="admin-section active" id="tab-news">
+      <div class="admin-grid">
+        <div class="form-group"><label>Headline</label><input type="text" id="news-title" placeholder="e.g. Race 5 Results — Monza Sprint"></div>
+        <div class="form-group"><label>Category</label>
+          <select id="news-tag"><option value="RESULTS">Results</option><option value="ANNOUNCEMENT">Announcement</option><option value="DRIVER NEWS">Driver News</option><option value="TECHNICAL">Technical</option><option value="LEAGUE NEWS">League News</option></select>
+        </div>
+        <div class="form-group full"><label>Content</label><textarea id="news-body" placeholder="Write your news update here..."></textarea></div>
+        <div class="admin-actions"><button class="btn btn-primary" onclick="postNews()">⬆ Publish</button><button class="btn btn-ghost" onclick="clearForm()">Clear</button></div>
       </div>
-      <div class="form-group full"><label>Content</label><textarea id="news-body" placeholder="Write your news update here..."></textarea></div>
-      <div class="admin-actions"><button class="btn btn-primary" onclick="postNews()">⬆ Publish</button><button class="btn btn-ghost" onclick="clearForm()">Clear</button></div>
+    </div>
+
+    <!-- DRIVERS TAB -->
+    <div class="admin-section" id="tab-drivers">
+      <div class="admin-grid">
+        <div class="form-group"><label>Driver Name</label><input type="text" id="drv-name" placeholder="e.g. Marcel Hartwich"></div>
+        <div class="form-group"><label>Car Number</label><input type="text" id="drv-num" placeholder="e.g. 28"></div>
+        <div class="form-group"><label>Role</label><input type="text" id="drv-role" placeholder="e.g. GT3 Driver"></div>
+        <div class="form-group"><label>Status</label>
+          <select id="drv-status"><option value="active">Active</option><option value="reserve">Reserve</option></select>
+        </div>
+        <div class="admin-actions"><button class="btn btn-primary" onclick="addDriver()">+ Add Driver</button></div>
+      </div>
+    </div>
+
+    <!-- STAFF TAB -->
+    <div class="admin-section" id="tab-staff">
+      <div class="admin-grid">
+        <div class="form-group"><label>Name</label><input type="text" id="stf-name" placeholder="e.g. Marcel Hartwich"></div>
+        <div class="form-group"><label>Title</label><input type="text" id="stf-title" placeholder="e.g. Team Principal"></div>
+        <div class="form-group"><label>Department</label><input type="text" id="stf-dept" placeholder="e.g. Management"></div>
+        <div class="admin-actions"><button class="btn btn-primary" onclick="addStaff()">+ Add Staff</button></div>
+      </div>
+    </div>
+
+    <!-- SPONSORS TAB -->
+    <div class="admin-section" id="tab-sponsors">
+      <div class="admin-grid">
+        <div class="form-group"><label>Sponsor Name</label><input type="text" id="spn-name" placeholder="e.g. Group S"></div>
+        <div class="form-group"><label>Tier</label>
+          <select id="spn-tier"><option value="TITLE SPONSOR">Title Sponsor</option><option value="OFFICIAL PARTNER">Official Partner</option><option value="SUPPLIER">Supplier</option></select>
+        </div>
+        <div class="form-group full"><label>Website URL (optional)</label><input type="text" id="spn-url" placeholder="e.g. https://groups.com"></div>
+        <div class="admin-actions"><button class="btn btn-primary" onclick="addSponsor()">+ Add Sponsor</button></div>
+      </div>
     </div>
   </div>
 
   <div class="section-label reveal"><h2>Latest News</h2></div>
   <div id="news-feed"><div class="news-empty">No news yet — check back soon</div></div>
+
+  <div class="section-label reveal"><h2>Drivers</h2></div>
+  <div id="drivers-grid" class="drivers-grid"><div class="driver-empty">No drivers yet</div></div>
+
+  <div class="section-label reveal"><h2>Staff</h2></div>
+  <div id="staff-grid" class="staff-grid"></div>
+
+  <div class="section-label reveal"><h2>Sponsors</h2></div>
+  <div id="sponsors-grid" class="sponsors-grid"></div>
 
   <div class="section-label reveal"><h2>The Journey</h2></div>
   <div class="timeline">
@@ -1036,7 +1160,7 @@ function closeMobNav(){ document.getElementById('mob-nav').classList.remove('ope
 // ─── AUTH ───
 function openLogin(){ document.getElementById('login-overlay').classList.add('visible');setTimeout(()=>document.getElementById('admin-password').focus(),100); }
 function closeLogin(){ document.getElementById('login-overlay').classList.remove('visible');document.getElementById('admin-password').value='';document.getElementById('login-error').style.display='none'; }
-function tryLogin(){ const pw=document.getElementById('admin-password').value;if(pw===ADMIN_PASSWORD){isAdmin=true;closeLogin();document.getElementById('admin-panel').classList.add('visible');notify('✓ Admin access granted');}else{document.getElementById('login-error').style.display='block';document.getElementById('admin-password').value='';document.getElementById('admin-password').focus();} }
+function tryLogin(){ const pw=document.getElementById('admin-password').value;if(pw===ADMIN_PASSWORD){isAdmin=true;closeLogin();document.getElementById('admin-panel').classList.add('visible');renderNews();renderDrivers();renderStaff();renderSponsors();notify('✓ Admin access granted');}else{document.getElementById('login-error').style.display='block';document.getElementById('admin-password').value='';document.getElementById('admin-password').focus();} }
 function logout(){ isAdmin=false;document.getElementById('admin-panel').classList.remove('visible');notify('Logged out'); }
 
 // ─── NEWS ───
@@ -1059,6 +1183,136 @@ function renderNews(){
 }
 function escHtml(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 
+// ─── ADMIN TABS ───
+function switchTab(name, btn) {
+  document.querySelectorAll('.admin-section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── DRIVERS ───
+let drivers = JSON.parse(localStorage.getItem('nussy_drivers') || '[]');
+
+function addDriver() {
+  const name = document.getElementById('drv-name').value.trim();
+  const num  = document.getElementById('drv-num').value.trim();
+  const role = document.getElementById('drv-role').value.trim();
+  const status = document.getElementById('drv-status').value;
+  if (!name) { notify('⚠ Driver name required'); return; }
+  drivers.push({ id: Date.now(), name, num, role, status });
+  localStorage.setItem('nussy_drivers', JSON.stringify(drivers));
+  renderDrivers();
+  document.getElementById('drv-name').value = '';
+  document.getElementById('drv-num').value = '';
+  document.getElementById('drv-role').value = '';
+  notify('✓ Driver added');
+}
+
+function deleteDriver(id) {
+  drivers = drivers.filter(d => d.id !== id);
+  localStorage.setItem('nussy_drivers', JSON.stringify(drivers));
+  renderDrivers();
+  notify('Driver removed');
+}
+
+function renderDrivers() {
+  const grid = document.getElementById('drivers-grid');
+  if (!grid) return;
+  if (drivers.length === 0) { grid.innerHTML = '<div class="driver-empty">No drivers yet</div>'; return; }
+  grid.innerHTML = drivers.map(d => `
+    <div class="driver-card visor reveal">
+      <div class="driver-num">${escHtml(d.num || '—')}</div>
+      <div class="driver-role">${escHtml(d.role || 'Driver')}</div>
+      <div class="driver-name">${escHtml(d.name)}</div>
+      <div class="driver-status ${d.status === 'reserve' ? 'reserve' : ''}">
+        <span class="dot"></span>${d.status === 'reserve' ? 'Reserve' : 'Active'}
+        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:12px;font-size:10px;" onclick="deleteDriver(${d.id})">✕</span>` : ''}
+      </div>
+    </div>`).join('');
+  observeReveal();
+}
+
+// ─── STAFF ───
+let staff = JSON.parse(localStorage.getItem('nussy_staff') || '[]');
+
+function addStaff() {
+  const name  = document.getElementById('stf-name').value.trim();
+  const title = document.getElementById('stf-title').value.trim();
+  const dept  = document.getElementById('stf-dept').value.trim();
+  if (!name) { notify('⚠ Name required'); return; }
+  staff.push({ id: Date.now(), name, title, dept });
+  localStorage.setItem('nussy_staff', JSON.stringify(staff));
+  renderStaff();
+  document.getElementById('stf-name').value = '';
+  document.getElementById('stf-title').value = '';
+  document.getElementById('stf-dept').value = '';
+  notify('✓ Staff member added');
+}
+
+function deleteStaff(id) {
+  staff = staff.filter(s => s.id !== id);
+  localStorage.setItem('nussy_staff', JSON.stringify(staff));
+  renderStaff();
+  notify('Staff member removed');
+}
+
+function renderStaff() {
+  const grid = document.getElementById('staff-grid');
+  if (!grid) return;
+  if (staff.length === 0) { grid.innerHTML = '<div class="driver-empty">No staff yet</div>'; return; }
+  grid.innerHTML = staff.map(s => `
+    <div class="staff-card reveal">
+      <div class="staff-dept">${escHtml(s.dept || 'Team')}</div>
+      <div class="staff-name">${escHtml(s.name)}</div>
+      <div class="staff-title">${escHtml(s.title || '')}
+        ${isAdmin ? `<span style="color:#ff5555;cursor:pointer;margin-left:10px;font-size:10px;" onclick="deleteStaff(${s.id})">✕</span>` : ''}
+      </div>
+    </div>`).join('');
+  observeReveal();
+}
+
+// ─── SPONSORS ───
+let sponsors = JSON.parse(localStorage.getItem('nussy_sponsors') || '[]');
+
+function addSponsor() {
+  const name = document.getElementById('spn-name').value.trim();
+  const tier = document.getElementById('spn-tier').value;
+  const url  = document.getElementById('spn-url').value.trim();
+  if (!name) { notify('⚠ Sponsor name required'); return; }
+  sponsors.push({ id: Date.now(), name, tier, url });
+  localStorage.setItem('nussy_sponsors', JSON.stringify(sponsors));
+  renderSponsors();
+  document.getElementById('spn-name').value = '';
+  document.getElementById('spn-url').value = '';
+  notify('✓ Sponsor added');
+}
+
+function deleteSponsor(id) {
+  sponsors = sponsors.filter(s => s.id !== id);
+  localStorage.setItem('nussy_sponsors', JSON.stringify(sponsors));
+  renderSponsors();
+  notify('Sponsor removed');
+}
+
+function renderSponsors() {
+  const grid = document.getElementById('sponsors-grid');
+  if (!grid) return;
+  if (sponsors.length === 0) { grid.innerHTML = '<div class="driver-empty">No sponsors yet</div>'; return; }
+  grid.innerHTML = sponsors.map(s => {
+    const tag = s.url ? `<a href="${escHtml(s.url)}" target="_blank" class="sponsor-card visor reveal">` : `<div class="sponsor-card visor reveal">`;
+    const close = s.url ? `</a>` : `</div>`;
+    return `${tag}
+      <div class="holo-shimmer"></div>
+      <div class="sponsor-tier">${escHtml(s.tier)}</div>
+      <div class="sponsor-name">${escHtml(s.name)}</div>
+      ${s.url ? `<div class="sponsor-link">${escHtml(s.url.replace(/^https?:\/\//,''))}</div>` : ''}
+      ${isAdmin ? `<div style="color:#ff5555;cursor:pointer;font-size:10px;margin-top:8px;" onclick="event.preventDefault();deleteSponsor(${s.id})">✕ Remove</div>` : ''}
+    ${close}`;
+  }).join('');
+  observeReveal();
+}
+
 // ─── NOTIFY ───
 function notify(msg){ const el=document.getElementById('notif');el.textContent=msg;el.style.display='block';clearTimeout(window._nt);window._nt=setTimeout(()=>{el.style.display='none';},3000); }
 
@@ -1067,6 +1321,9 @@ function notify(msg){ const el=document.getElementById('notif');el.textContent=m
 
 // ─── INIT ───
 renderNews();
+renderDrivers();
+renderStaff();
+renderSponsors();
 document.getElementById('login-overlay').addEventListener('click',function(e){if(e.target===this)closeLogin();});
 (function(){ try{ function sr(){ window.parent.postMessage({type:'setHeight',height:document.body.scrollHeight},'*'); try{window.parent.document.querySelectorAll('iframe').forEach(f=>{try{if(f.contentWindow===window){f.style.cssText='width:100%!important;height:100vh!important;border:none!important;display:block!important;position:fixed!important;top:0!important;left:0!important;z-index:99999!important;';}}catch(e){}});}catch(e){}} sr();window.addEventListener('resize',sr);[500,1500,3000].forEach(t=>setTimeout(sr,t)); }catch(e){} })();
 </script>
