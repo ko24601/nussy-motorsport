@@ -10,6 +10,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 <script>
   firebase.initializeApp({
     apiKey: "AIzaSyA0zb71MZOh5Ew8jVkGV2iR37xcDSkxwrE",
@@ -577,6 +578,24 @@
 
   .driver-empty { grid-column:1/-1; text-align:center; padding:48px; color:var(--muted); font-size:13px; letter-spacing:3px; text-transform:uppercase; border:1px dashed var(--border); }
 
+  /* ── IMAGE UPLOAD ── */
+  .img-upload-wrap input[type="file"] { display:none; }
+  .img-upload-label {
+    display:flex; align-items:center; gap:10px;
+    background:var(--carbon); border:1px dashed rgba(170,255,0,0.25);
+    color:var(--muted); font-family:'Rajdhani',sans-serif; font-size:13px;
+    letter-spacing:2px; text-transform:uppercase;
+    padding:12px 16px; cursor:none; transition:border-color .2s,color .2s; width:100%;
+  }
+  .img-upload-label:hover { border-color:rgba(170,255,0,0.5); color:var(--gold); }
+  .img-preview { width:100%; height:110px; object-fit:cover; border:1px solid rgba(170,255,0,0.15); display:none; margin-top:8px; filter:grayscale(20%); }
+
+  /* Cards with photo */
+  .driver-card.has-photo,.staff-card.has-photo { padding-top:0; }
+  .driver-photo,.staff-photo { width:100%; object-fit:cover; object-position:top center; display:block; filter:grayscale(15%) contrast(1.05); }
+  .driver-photo { height:160px; margin-bottom:20px; border-bottom:2px solid var(--gold); }
+  .staff-photo  { height:130px; margin-bottom:16px; border-bottom:1px solid rgba(170,255,0,0.2); }
+
   /* ── STAFF ── */
   .staff-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(220px,1fr)); gap:2px; }
 
@@ -833,6 +852,12 @@
         <div class="form-group"><label>Status</label>
           <select id="drv-status"><option value="active">Active</option><option value="reserve">Reserve</option></select>
         </div>
+        <div class="form-group full img-upload-wrap">
+          <label>Photo</label>
+          <label class="img-upload-label" for="drv-photo"><span class="upload-icon">📷</span> Choose photo…</label>
+          <input type="file" id="drv-photo" accept="image/*" onchange="previewImg(this,'drv-preview')">
+          <img id="drv-preview" class="img-preview">
+        </div>
         <div class="admin-actions"><button class="btn btn-primary" onclick="addDriver()">+ Add Driver</button></div>
       </div>
     </div>
@@ -843,6 +868,12 @@
         <div class="form-group"><label>Name</label><input type="text" id="stf-name" placeholder="e.g. Marcel Hartwich"></div>
         <div class="form-group"><label>Title</label><input type="text" id="stf-title" placeholder="e.g. Team Principal"></div>
         <div class="form-group"><label>Department</label><input type="text" id="stf-dept" placeholder="e.g. Management"></div>
+        <div class="form-group full img-upload-wrap">
+          <label>Photo</label>
+          <label class="img-upload-label" for="stf-photo"><span class="upload-icon">📷</span> Choose photo…</label>
+          <input type="file" id="stf-photo" accept="image/*" onchange="previewImg(this,'stf-preview')">
+          <img id="stf-preview" class="img-preview">
+        </div>
         <div class="admin-actions"><button class="btn btn-primary" onclick="addStaff()">+ Add Staff</button></div>
       </div>
     </div>
@@ -927,7 +958,8 @@
 <script>
 let isAdmin = false;
 let news = [], drivers = [], staff = [], sponsors = [];
-const db = firebase.firestore();
+const db      = firebase.firestore();
+const storage = firebase.storage();
 
 // Real-time listeners — load data live for everyone
 db.collection('news').orderBy('createdAt','desc').onSnapshot(snap => {
@@ -1282,16 +1314,46 @@ function renderNews() {
   observeReveal(); initCardTilt();
 }
 
+// ─── IMAGE PREVIEW ───
+function previewImg(input, previewId) {
+  const preview = document.getElementById(previewId);
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+    reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+    reader.readAsDataURL(input.files[0]);
+    // Update label text
+    input.previousElementSibling.querySelector
+      ? input.previousElementSibling.childNodes[1] && (input.previousElementSibling.childNodes[1].textContent = ' ' + input.files[0].name)
+      : null;
+  }
+}
+
+async function uploadPhoto(file, path) {
+  if (!file) return null;
+  const ref = storage.ref(path);
+  await ref.put(file);
+  return ref.getDownloadURL();
+}
+
 // ─── DRIVERS ───
-function addDriver() {
+async function addDriver() {
   const name   = document.getElementById('drv-name').value.trim();
   const num    = document.getElementById('drv-num').value.trim();
   const role   = document.getElementById('drv-role').value.trim();
   const status = document.getElementById('drv-status').value;
+  const file   = document.getElementById('drv-photo').files[0];
   if (!name) { notify('⚠ Driver name required'); return; }
-  db.collection('drivers').add({ name, num, role, status, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(() => { document.getElementById('drv-name').value=''; document.getElementById('drv-num').value=''; document.getElementById('drv-role').value=''; notify('✓ Driver added'); })
-    .catch(e => notify('⚠ ' + e.message));
+  notify('Uploading...');
+  const photoURL = file ? await uploadPhoto(file, `drivers/${Date.now()}_${file.name}`) : null;
+  db.collection('drivers').add({ name, num, role, status, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => {
+      document.getElementById('drv-name').value='';
+      document.getElementById('drv-num').value='';
+      document.getElementById('drv-role').value='';
+      document.getElementById('drv-photo').value='';
+      document.getElementById('drv-preview').style.display='none';
+      notify('✓ Driver added');
+    }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteDriver(id) {
   db.collection('drivers').doc(id).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
@@ -1301,7 +1363,8 @@ function renderDrivers() {
   if (!grid) return;
   if (drivers.length === 0) { grid.innerHTML = '<div class="driver-empty">No drivers yet</div>'; return; }
   grid.innerHTML = drivers.map(d => `
-    <div class="driver-card visor reveal">
+    <div class="driver-card visor reveal ${d.photoURL ? 'has-photo' : ''}">
+      ${d.photoURL ? `<img class="driver-photo" src="${escHtml(d.photoURL)}" alt="${escHtml(d.name)}">` : ''}
       <div class="driver-num">${escHtml(d.num || '—')}</div>
       <div class="driver-role">${escHtml(d.role || 'Driver')}</div>
       <div class="driver-name">${escHtml(d.name)}</div>
@@ -1314,14 +1377,23 @@ function renderDrivers() {
 }
 
 // ─── STAFF ───
-function addStaff() {
+async function addStaff() {
   const name  = document.getElementById('stf-name').value.trim();
   const title = document.getElementById('stf-title').value.trim();
   const dept  = document.getElementById('stf-dept').value.trim();
+  const file  = document.getElementById('stf-photo').files[0];
   if (!name) { notify('⚠ Name required'); return; }
-  db.collection('staff').add({ name, title, dept, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(() => { document.getElementById('stf-name').value=''; document.getElementById('stf-title').value=''; document.getElementById('stf-dept').value=''; notify('✓ Staff member added'); })
-    .catch(e => notify('⚠ ' + e.message));
+  notify('Uploading...');
+  const photoURL = file ? await uploadPhoto(file, `staff/${Date.now()}_${file.name}`) : null;
+  db.collection('staff').add({ name, title, dept, photoURL: photoURL || '', createdAt: firebase.firestore.FieldValue.serverTimestamp() })
+    .then(() => {
+      document.getElementById('stf-name').value='';
+      document.getElementById('stf-title').value='';
+      document.getElementById('stf-dept').value='';
+      document.getElementById('stf-photo').value='';
+      document.getElementById('stf-preview').style.display='none';
+      notify('✓ Staff member added');
+    }).catch(e => notify('⚠ ' + e.message));
 }
 function deleteStaff(id) {
   db.collection('staff').doc(id).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
@@ -1331,7 +1403,8 @@ function renderStaff() {
   if (!grid) return;
   if (staff.length === 0) { grid.innerHTML = '<div class="driver-empty">No staff yet</div>'; return; }
   grid.innerHTML = staff.map(s => `
-    <div class="staff-card reveal">
+    <div class="staff-card reveal ${s.photoURL ? 'has-photo' : ''}">
+      ${s.photoURL ? `<img class="staff-photo" src="${escHtml(s.photoURL)}" alt="${escHtml(s.name)}">` : ''}
       <div class="staff-dept">${escHtml(s.dept || 'Team')}</div>
       <div class="staff-name">${escHtml(s.name)}</div>
       <div class="staff-title">${escHtml(s.title || '')}
