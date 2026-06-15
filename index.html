@@ -1684,14 +1684,14 @@ async function addDriver() {
   const file   = document.getElementById('drv-photo').files[0];
   if (!name) { notify('⚠ Driver name required'); return; }
   notify('Uploading...');
-  const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
-  db.collection('roster').add({ name, number, role, nation, social, bio, status, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(() => {
-      ['drv-name','drv-number','drv-role','drv-nation','drv-social','drv-bio'].forEach(id => document.getElementById(id).value='');
-      document.getElementById('drv-photo').value='';
-      document.getElementById('drv-preview').style.display='none';
-      notify('✓ Driver added');
-    }).catch(e => notify('⚠ ' + e.message));
+  try {
+    const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
+    await db.collection('roster').add({ name, number, role, nation, social, bio, status, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    ['drv-name','drv-number','drv-role','drv-nation','drv-social','drv-bio'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('drv-photo').value='';
+    document.getElementById('drv-preview').style.display='none';
+    notify('✓ Driver added');
+  } catch(e) { notify('⚠ ' + e.message); }
 }
 function deleteDriver(id) {
   db.collection('roster').doc(id).delete().then(() => notify('Driver removed')).catch(e => notify('⚠ ' + e.message));
@@ -1738,14 +1738,14 @@ async function addStaff() {
   const file   = document.getElementById('stf-photo').files[0];
   if (!name) { notify('⚠ Name required'); return; }
   notify('Uploading...');
-  const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
-  db.collection('roster').add({ name, role, nation, social, bio, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() })
-    .then(() => {
-      ['stf-name','stf-title','stf-nation','stf-social','stf-bio'].forEach(id => document.getElementById(id).value='');
-      document.getElementById('stf-photo').value='';
-      document.getElementById('stf-preview').style.display='none';
-      notify('✓ Staff member added');
-    }).catch(e => notify('⚠ ' + e.message));
+  try {
+    const photoUrl = file ? await uploadPhoto(file, `roster/${Date.now()}_${file.name}`) : '';
+    await db.collection('roster').add({ name, role, nation, social, bio, photoUrl, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+    ['stf-name','stf-title','stf-nation','stf-social','stf-bio'].forEach(id => document.getElementById(id).value='');
+    document.getElementById('stf-photo').value='';
+    document.getElementById('stf-preview').style.display='none';
+    notify('✓ Staff member added');
+  } catch(e) { notify('⚠ ' + e.message); }
 }
 function deleteStaff(id) {
   db.collection('roster').doc(id).delete().then(() => notify('Staff member removed')).catch(e => notify('⚠ ' + e.message));
