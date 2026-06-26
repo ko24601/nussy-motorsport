@@ -762,6 +762,30 @@
   .sponsor-name { font-family:'Orbitron',monospace; font-size:16px; font-weight:900; color:var(--gold); text-shadow:0 0 12px var(--gold-glow); }
   .sponsor-link { font-size:11px; color:var(--muted); letter-spacing:1px; }
 
+  /* ── COACHING PAGE ── */
+  .coaching-available { font-size:.7rem; font-weight:700; letter-spacing:.15em; color:var(--gold); border:1px solid var(--gold); display:inline-block; padding:4px 14px; border-radius:20px; margin-bottom:1.5rem; }
+  .coaching-chip { font-size:.7rem; font-weight:700; letter-spacing:.2em; color:var(--muted); text-transform:uppercase; margin-bottom:1rem; }
+  .coaching-hero { font-size:clamp(3rem,10vw,6rem); font-weight:900; line-height:1; margin-bottom:1.5rem; letter-spacing:-.02em; }
+  .coaching-sub { color:var(--muted); font-size:1rem; line-height:1.7; margin-bottom:3rem; }
+  .coaching-cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:1.5rem; margin-bottom:3rem; }
+  .coaching-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:2rem; position:relative; }
+  .coaching-card--popular { border-color:var(--gold); box-shadow:0 0 30px rgba(170,255,0,.1); }
+  .coaching-popular-badge { font-size:.65rem; font-weight:700; letter-spacing:.15em; color:var(--gold); margin-bottom:1rem; }
+  .coaching-price { font-size:3.5rem; font-weight:900; line-height:1; color:var(--gold); margin-bottom:.25rem; }
+  .coaching-price sup { font-size:1.5rem; vertical-align:super; }
+  .coaching-tier { font-size:.65rem; font-weight:700; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:.75rem; }
+  .coaching-name { font-size:1rem; font-weight:700; margin-bottom:1.25rem; }
+  .coaching-features { list-style:none; padding:0; margin:0; display:flex; flex-direction:column; gap:.5rem; }
+  .coaching-features li { font-size:.85rem; color:var(--muted); padding-left:1.25rem; position:relative; }
+  .coaching-features li::before { content:'✓'; position:absolute; left:0; color:var(--gold); font-weight:700; }
+  .coaching-footer { display:flex; align-items:center; flex-wrap:wrap; gap:1.5rem; padding-top:2rem; border-top:1px solid var(--border); }
+  .coaching-footer-label { font-size:.65rem; letter-spacing:.15em; color:var(--muted); text-transform:uppercase; margin-bottom:.25rem; }
+  .coaching-footer-url { font-size:1.5rem; font-weight:800; }
+  .coaching-book-btn { margin-left:auto; background:var(--gold); color:#000; font-size:.8rem; font-weight:800; letter-spacing:.1em; padding:14px 28px; border-radius:6px; text-decoration:none; transition:opacity .2s; }
+  .coaching-book-btn:hover { opacity:.85; }
+  .coaching-hashtags { display:flex; flex-direction:column; gap:.25rem; text-align:right; }
+  .coaching-hashtags span { font-size:.7rem; color:var(--muted); letter-spacing:.05em; }
+
   /* ── APP PAGES ── */
   .app-page {
     display: none;
@@ -967,6 +991,7 @@
   <button class="nav-item" onclick="navTo('sec-staff')"><span class="nav-icon">👥</span>Staff</button>
   <button class="nav-item" onclick="navTo('sec-sponsors')"><span class="nav-icon">🤝</span>Sponsors</button>
   <button class="nav-item" onclick="navTo('sec-journey')"><span class="nav-icon">📅</span>The Journey</button>
+  <button class="nav-item" onclick="navTo('sec-coaching')"><span class="nav-icon">🎯</span>Coaching</button>
 
   <div class="nav-divider"></div>
   <div class="nav-section-title">Links</div>
@@ -1243,6 +1268,66 @@
       <div class="tl-item reveal" style="transition-delay:.45s"><div class="tl-dot"></div>
         <div class="tl-body"><span class="tl-month">Coming</span><h3>Road to Real Karting</h3><p>The long-term goal — translate sim dominance into real-world karting performance. Every lap in ACC is a step closer to the physical track.</p></div>
         <div class="tl-year">2027</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="page-coaching" class="app-page">
+  <div class="page-inner">
+    <div class="coaching-available reveal">● NOW AVAILABLE</div>
+    <div class="coaching-chip reveal">ACC Coaching Services</div>
+    <h1 class="coaching-hero reveal">IMPROVE<br><span style="color:var(--gold)">YOUR LAP.</span></h1>
+    <p class="coaching-sub reveal">Data-driven coaching from real sim racing engineers.<br>From €10 — no experience needed.</p>
+
+    <div class="coaching-cards reveal">
+
+      <div class="coaching-card">
+        <div class="coaching-price"><sup>€</sup>10</div>
+        <div class="coaching-tier">Entry</div>
+        <div class="coaching-name">Single Telemetry &amp; Video Review</div>
+        <ul class="coaching-features">
+          <li>Send us 1 hotlap (video + telemetry data)</li>
+          <li>Detailed video-breakdown with corner-by-corner feedback</li>
+          <li>Actionable tips delivered to you</li>
+        </ul>
+      </div>
+
+      <div class="coaching-card coaching-card--popular">
+        <div class="coaching-popular-badge">● Most Popular</div>
+        <div class="coaching-price"><sup>€</sup>60</div>
+        <div class="coaching-tier">Live Session</div>
+        <div class="coaching-name">1-on-1 Live Coaching – 1 Hour</div>
+        <ul class="coaching-features">
+          <li>Live track session via Discord / TeamSpeak</li>
+          <li>Real-time spotter feedback &amp; driving line optimization</li>
+          <li>Instant data analysis between stints</li>
+        </ul>
+      </div>
+
+      <div class="coaching-card">
+        <div class="coaching-price"><sup>€</sup>100</div>
+        <div class="coaching-tier">Full Package</div>
+        <div class="coaching-name">Full Track-Day Prep Package</div>
+        <ul class="coaching-features">
+          <li>Comprehensive setup advice for your car / sim</li>
+          <li>1-hour pre-session strategy briefing</li>
+          <li>Full telemetry review after your track day</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <div class="coaching-footer reveal">
+      <div class="coaching-footer-left">
+        <div class="coaching-footer-label">Book now at</div>
+        <div class="coaching-footer-url">nussy<span style="color:var(--gold)">motorsport</span>.de</div>
+      </div>
+      <a class="coaching-book-btn" href="https://discord.gg/3FcMCvKBUq" target="_blank" rel="noopener">BOOK A SESSION →</a>
+      <div class="coaching-hashtags">
+        <span>#nussymotorsport</span>
+        <span>#acccoaching</span>
+        <span>#simracing</span>
       </div>
     </div>
   </div>
@@ -1570,7 +1655,8 @@ function navTo(id) {
     'sec-drivers': 'drivers',
     'sec-staff':   'staff',
     'sec-sponsors':'sponsors',
-    'sec-journey': 'journey',
+    'sec-journey':  'journey',
+    'sec-coaching': 'coaching',
   };
   showPage(pageMap[id] || 'home');
 }
